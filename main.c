@@ -4,15 +4,15 @@
 
 int main() {
 
-    FileWriter->Open();
+    showMenu();
 
-    FileWriter->write("Writes Text, But doesnt add a new line character at end");
-    FileWriter->write(" See?\n");
-    FileWriter->writeLine("Writes Text, but also adds a new line character at end");
-    FileWriter->writeLine("See?");
-    FileWriter->writeLine("Check This Out in Out/Output.txt");
+    UnionRectTesting();
+    IntersectRectTesting();
 
-    FileWriter->Close();
+    function *f = NULL;
+
+    while((f = getFunctionToRun(getResponse()))!=NULL) f();
+
 
     return 0;
 }

@@ -7,9 +7,9 @@
 */
 
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "IO.h"
+
 /*
   void showMenu();
   This function is responsible for showing available
@@ -19,9 +19,9 @@
 
 void showMenu() {
 
-  //Clearing Console of everything in it.
-  //To read more about this check out : https://stackoverflow.com/questions/2347770/how-do-you-clear-the-console-screen-in-c
-  printf("\e[1;1H\e[2J");
+    //Clearing Console of everything in it.
+    //To read more about this check out : https://stackoverflow.com/questions/2347770/how-do-you-clear-the-console-screen-in-c
+    printf("\e[1;1H\e[2J");
 
   // Printing the options.
   printf("Options:\n");
@@ -45,19 +45,19 @@ void showMenu() {
 int getResponse() {
 
 
-  int choice;
+    int choice;
 
-  // Displaying Question
-  printf ("\nPlease choose an option:\n>");  
+    // Displaying Question
+    printf("\nPlease choose an option:\n>");
 
-  // Getting Input
-  scanf ("%i", &choice);
-  
-  // Clearing Buffer  
-  fflush(stdin);
+    // Getting Input
+    scanf("%i", &choice);
 
-  // Returing the option.
-  return choice;
+    // Clearing Buffer
+    fflush(stdin);
+
+    // Returning the option.
+    return choice;
 }
 
 /*
@@ -68,7 +68,7 @@ int getResponse() {
 
 void ClearConsole() {
 
-  fflush(stdin);
+    fflush(stdin);
 
-  showMenu();
+    showMenu();
 }
