@@ -1,21 +1,30 @@
 #ifndef LINKED_HASH_MAP
 #define LINKED_HASH_MAP
 
-typedef struct {
-    const int *__restrict Index;
-
-} LinkedHashMap;
+typedef struct linkedHashMap *__restrict LinkedHashMapType;
 
 typedef struct {
-    void   (*const Initialize) (const int Capacity);
-    int    (*const getLength)  ();
-    void   (*const put)        (const char *__restrict StringKey, void *Instance);
-    void * (*const getByKey)   (const char *__restrict StringKey);
-    void * (*const getByIndex) (const int Index);
-    void   (*const forEach)    (void(*f)(const int Index,const char *__restrict StringKey,const void*__restrict Value));
-    void   (*const Delete)();
-} linkedHashMap;
 
-extern const linkedHashMap *__restrict LinkedHashMapClass;
+    LinkedHashMapType (*const new)(const int Capacity);
+
+    int (*const getLength)(LinkedHashMapType);
+    int (*const canStore) (LinkedHashMapType);
+
+    void (*const put)(LinkedHashMapType,char *__restrict StringKey, void *__restrict Instance);
+    void (*const putAt)(LinkedHashMapType,char *__restrict StringKey, void *__restrict Instance, int Index);
+
+    void *(*const getByKey)(LinkedHashMapType,const char *__restrict StringKey);
+    void *(*const getByIndex)(LinkedHashMapType,const int Index);
+
+    void (*const forEach)(LinkedHashMapType,void(*f)(const int Index, const char *__restrict StringKey, const void *__restrict Value));
+
+    void (*const DeleteKey)(LinkedHashMapType,const char *__restrict StringKey);
+    void (*const DeleteIndex)(LinkedHashMapType,const int Index);
+
+    void (*const DeleteMap)(LinkedHashMapType);
+
+} linkedHashMapClass;
+
+extern const linkedHashMapClass *__restrict LinkedHashMap;
 
 #endif

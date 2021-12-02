@@ -4,10 +4,12 @@
 
 int main() {
 
+
+    Initialize();
+
     showMenu();
 
-    UnionRectTesting();
-    IntersectRectTesting();
+
 
     function *f = NULL;
 

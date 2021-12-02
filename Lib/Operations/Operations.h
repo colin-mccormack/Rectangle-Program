@@ -46,8 +46,9 @@ typedef void function();
 
 function *getFunctionToRun(int Choice);
 
-void UnionRectTesting();
-void IntersectRectTesting();
+
+void Initialize();
+
 
 
 #endif //Operations.h

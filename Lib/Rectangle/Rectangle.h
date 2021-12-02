@@ -14,23 +14,18 @@ typedef struct {
 typedef struct {
 
     Rectangle *__restrict (*const new)();
+    RectangleStatistics *__restrict (*const newRectStats)();
 
-    void (*const Delete)(const Rectangle *__restrict);
+    void (*const Delete)(Rectangle *__restrict);
+    void (*const DeleteStats)(RectangleStatistics *__restrict);
 
-    void (*const Store)(const Rectangle *__restrict);
+    char * (*const SerializeRect) (Rectangle *__restrict);
+    char * (*const SerializeRectStats) (Rectangle *__restrict);
+}
+rectangleClass;
 
-    int (*const  Contains) (const char *__restrict name);
+extern const rectangleClass *__restrict RectangleClass;
 
-
-    Rectangle *__restrict (*const get)(int Index);
-
-    void (*const forEach)(
-            const Rectangle *__restrict,
-            void(*f)(int index, int left, int right, int top, int bottom, const char *__restrict name));
-
-
-
-} rectangleClass;
-
+static char * SerializeRect (Rectangle *__restrict);
 
 #endif

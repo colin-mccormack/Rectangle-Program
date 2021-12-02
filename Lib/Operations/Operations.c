@@ -3,13 +3,16 @@
 
 #include "Operations.h"
 #include "../Rectangle/Rectangle.h"
+#include "../LinkedHashMap/LinkedHashMap.h"
 
 #define DISPLAY_INVALID_OPTION_ERROR printf("No working case. Retry.\n");
 
+void UserRect();
 
-void InsertUserRect();
-void InsertRandomRect();
+void RandomRect();
+
 void FindRect();
+
 void DeleteRect();
 void UnionRect();
 int IntersectRect();
@@ -20,54 +23,86 @@ void ClearConsole();
  void QuitProgram();
  void invalidCase();
 
- function* getFunctionToRun(int Choice) {
+function *getFunctionToRun(int Choice) {
 
-     switch (Choice) {
+    switch (Choice) {
 
-         // If users wants to generate a random rectangle
-         case OP_INSERT_USER_RECT:
-             return &InsertUserRect;
+        // If users wants to generate a random rectangle
+        case OP_INSERT_USER_RECT:
+            return &UserRect;
 
-             // If users wants the program to store a rectanglge
-         case OP_INSERT_RD_RECT:
-             return &InsertRandomRect;
+            // If users wants the program to store a rectanglge
+        case OP_INSERT_RD_RECT:
+            return &RandomRect;
 
-             // If users wants to find rectangle
-         case OP_FIND_RECT:
-             return &FindRect;
+            // If users wants to find rectangle
+        case OP_FIND_RECT:
+            return &FindRect;
 
-             // If user wants to delete rectangle by name
-         case OP_DELETE_RECT:
-             return &DeleteRect;
+            // If user wants to delete rectangle by name
+        case OP_DELETE_RECT:
+            return &DeleteRect;
 
              // If user wants to find union of two rectangles
          case OP_UNION_RECT:
              return &UnionRect;
 
-             // If user wants to find intersection of two rectangles
-         case OP_INTERSECT:
-             return &IntersectRect;
-
-             // If user wants to display all rectangles
-         case OP_OUTPUT_RECT:
-             return &DisplayAllEquations;
+            // If user wants to find intersection of two rectangles
+        case OP_OUTPUT_RECT:
+            return &DisplayRectangles;
 
              // If user wants to close the program
          case OP_QUIT_PROGRAM:
              QuitProgram();
              return NULL;
 
-             // This is an easter egg hidden, this clears the console,
-             // this was added by us to see if you would suffer through this much code reading.
-         case 256:
-             return &ClearConsole;
+            // This is an easter egg hidden, this clears the console,
+            // this was added by us to see if you would suffer through this much code reading.
+        case 256:
+            return &ClearConsole;
 
-             // If users gives us an invalid input.
-         default:
-             return &invalidCase;
+            // If users gives us an invalid input.
+        default:
+            return &invalidCase;
 
-     }
- }
+    }
+}
+
+/*
+
+    Caching Rectangles and Rectangle Statistics
+
+ */
+
+static LinkedHashMapType RectanglesList = NULL;
+static LinkedHashMapType StatisticsList = NULL;
+
+void Initialize() {
+    RectanglesList = LinkedHashMap->new(MAX_RECTS);
+    StatisticsList = LinkedHashMap->new(MAX_RECTS);
+}
+
+/*
+
+    Wrapper functions to storing and reading from hash maps.
+
+ */
+
+static void *__restrict wrap(const Rectangle*__restrict R) {
+    return (void *) R;
+}
+
+static Rectangle *__restrict unwrap(const void*__restrict R) {
+    return (Rectangle *) R;
+}
+
+static void *__restrict pack(const RectangleStatistics*__restrict RS) {
+    return (void*) RS;
+}
+
+static RectangleStatistics *__restrict unpack(const void*__restrict RS) {
+    return (RectangleStatistics*) RS;
+}
 
 /*
 
@@ -75,7 +110,7 @@ void ClearConsole();
 
  */
 
-void InsertUserRect(Rectangle *r) {
+static void InsertUserRect(Rectangle *r) {
 
     do {
 
@@ -95,7 +130,7 @@ void InsertUserRect(Rectangle *r) {
 
     fflush(stdin);
 
- }
+}
 
 /*
 
@@ -121,150 +156,104 @@ void InsertRandomRect(Rectangle r) {
 
 }
 
-void FindRect(){}
-void DeleteRect(){}
+/*
+
+    1. Get user rectangle
+
+*/
+
+void UserRect() {
+
+    Rectangle *r = RectangleClass->new();
+    InsertUserRect(r);
+    //store rectangle\
+    LinkedHashMap->put(RectanglesList,r->name, wrap(r));
+
+}
 
 /*
 
-   Find the union of two rectangles
+    2. Random rectangle
 
- */
+*/
 
-void UnionRect(){
+void RandomRect() {
 
-    Rectangle r1, r2, r3Base;
-    Rectangle *r3 = &r3Base;
-
-    printf ("\n\nPlease enter rectangle 1.\n");
-    InsertUserRect(&r1);
-    printf ("\n\nNow enter rectangle 2.\n");
-    InsertUserRect(&r2);
-
-    //set the furthest top value (highest) to the union top value
-    r3->top = (r1.top < r2.top) ? r2.top : r1.top;
-    //printf ("\n\n The union testing rect is : (%i, ", r3->top);
-
-    //set the furthest bottom value (lowest) to the union bottom value
-    r3->bottom = (r1.bottom < r2.bottom) ? r1.bottom : r2.bottom;
-    //printf ("%i, ", r3->bottom);
-
-    //set the furthest right value (highest) to the union left value
-    r3->right = (r1.right < r2.right) ? r2.right : r1.right;
-    //printf ("%i, ", r3->right);
-
-    //set the furthest left value (lowest) to the union left value
-    r3->left = (r1.left < r2.left) ? r1.left : r2.left;
-    //printf ("%i)\n ", r3->left);
-
+    Rectangle *r = RectangleClass->new();
+    InsertRandomRect(r);
+    //store rectangle
+    LinkedHashMap->put(RectanglesList, r->name, wrap(r));
 }
 
-void UnionRectTesting() {
+/*
 
-    Rectangle r1, r2, r3Base;
-    Rectangle *r3 = &r3Base;
+   3. Find rectangle
 
-    r1.top = 6;
-    r1.bottom = 4;
-    r1.right = 1;
-    r1.left = 0;
+*/
 
-    r2.top = 2;
-    r2.bottom = 0;
-    r2.right = 3;
-    r2.left = 2;
 
-    //set the furthest top value (highest) to the union top value
-    r3->top = (r1.top < r2.top) ? r2.top : r1.top;
-    printf ("\n\n The union testing rect is : (%i, ", r3->top);
+void FindRect() {
 
-    //set the furthest bottom value (lowest) to the union bottom value
-    r3->bottom = (r1.bottom < r2.bottom) ? r1.bottom : r2.bottom;
-    printf ("%i, ", r3->bottom);
+    char s[100];
 
-    //set the furthest right value (highest) to the union left value
-    r3->right = (r1.right < r2.right) ? r2.right : r1.right;
-    printf ("%i, ", r3->right);
+    printf("Please Enter Rectangle name:\n>");
+    scanf("%s",s);
 
-    //set the furthest left value (lowest) to the union left value
-    r3->left = (r1.left < r2.left) ? r1.left : r2.left;
-    printf ("%i)\n ", r3->left);
+    void *R = LinkedHashMap->getByKey(RectanglesList,s);
 
-}
-
-int IntersectRect(){
-
-    Rectangle r1, r2, r3Base;
-    Rectangle *r3 = &r3Base;
-    
-    printf ("\n\nPlease enter rectangle 1.\n");
-    InsertUserRect(&r1);
-    printf ("\n\nNow enter rectangle 2.\n");
-    InsertUserRect(&r2);
-
-    //set the answer to the closest top to the origin
-    r3->top = (r1.top < r2.top) ? r1.top : r2.top;
-    //printf ("%i, ", r3->top);
-
-    //set the answer to the furthest bottom from the origin
-    r3->bottom = (r1.bottom < r2.bottom) ? r2.bottom : r1.bottom;
-    //printf ("%i)\n", r3->bot);
-
-    //set the answer to the closest right line to the origin
-    r3->right = (r1.right < r2.right) ? r1.right : r2.right;
-    //printf ("%i, ", r3->rt);
-
-    r3->left = (r1.left < r2.left) ? r2.left : r1.left;
-    //printf ("(%i, ", r3->lt);
-
-    if (r3->bottom < r3->top &&  r3->left < r3->right) {
-        //valid rectangle
-        printf ("The rectangle is valid!\n");
-       // printRectangle (r3);
-        return 1;
+    if(!R) {
+        printf("Rectangle Doesn't Exist\n");
+        return;
     }
 
-    printf ("The rectangle is invalid.\n");
-    return 0;
+    Rectangle *r = unwrap(R);
+
+    printf("Here's your rectangle...\n"
+            "%s, (%i, %i), (%i, %i), %i, %i\n",
+           r->name, r->top, r->bottom, r->right, r->left, r->area, r->perimeter);
+
 
 }
 
-void IntersectRectTesting() {
+/*
 
-    Rectangle r1, r2, r3Base;
-    Rectangle *r3 = &r3Base;
+    4. Delete Rectangle
 
-    r1.top = 6;
-    r1.bottom = 3;
-    r1.right = 4;
-    r1.left = 0;
+*/
 
-    r2.top = 2;
-    r2.bottom = 0;
-    r2.right = 3;
-    r2.left = 2;
+void DeleteRect() {}
 
-    //set the answer to the closest top to the origin
-    r3->top = (r1.top < r2.top) ? r1.top : r2.top;
-    //printf ("%i, ", r3->top);
+/*
 
-    //set the answer to the furthest bottom from the origin
-    r3->bottom = (r1.bottom < r2.bottom) ? r2.bottom : r1.bottom;
-    //printf ("%i)\n", r3->bot);
+    5. Run and manage all computations and calculations
 
-    //set the answer to the closest right line to the origin
-    r3->right = (r1.right < r2.right) ? r1.right : r2.right;
-    //printf ("%i, ", r3->rt);
+*/
 
-    r3->left = (r1.left < r2.left) ? r2.left : r1.left;
-    //printf ("(%i, ", r3->lt);
+void AllCalculations() {
 
-    if (r3->bottom < r3->top &&  r3->left < r3->right) {
-        //valid rectangle
-        printf("The rectangle is valid!\n");
-        // printRectangle (r3);
-    } else {
-        printf("The rectangle is invalid!\n");
+    RectangleStatistics *rMath = RectangleClass->newRectStats();
+    Rectangle *temp;
+
+    //get two random rectangles
+    InsertRandomRect(rMath->r1);
+    InsertRandomRect(rMath->r2);
+
+    //sort them
+    //decide which rectangle goes first alphabetically
+    if (strcmp(rMath->r1->name, rMath->r2->name) > 0) {
+        //if the second one is greater, then swap them by using simple temp swap
+        temp = rMath->r1;
+        rMath->r1 = rMath->r2;
+        rMath->r2 =  temp;
     }
+
+    //find and store union value
+    UnionRect(rMath);
+
+    //find and store intersect value
+    IntersectRect(rMath);
+
+    DisplayAllStats(rMath);
 
 }
 
@@ -277,11 +266,11 @@ void DisplayAllEquations(){}
 
 */
 
- void QuitProgram() {
+void QuitProgram() {
 
-     printf("\nGood bye!\n");
+    printf("\nGood bye!\n");
 
- }
+}
 
 /*
 
@@ -289,13 +278,13 @@ void DisplayAllEquations(){}
 
 */
 
- void invalidCase() {
+void invalidCase() {
 
-     /*
-       Ask them to retry with error prompt
+    /*
+      Ask them to retry with error prompt
 
-     */
+    */
 
-     DISPLAY_INVALID_OPTION_ERROR
- }
+    DISPLAY_INVALID_OPTION_ERROR
+}
 
