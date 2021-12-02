@@ -11,8 +11,6 @@ int main() {
 
     showMenu();
 
-
-
     function *f = NULL;
 
     while((f = getFunctionToRun(getResponse()))!=NULL) f();
