@@ -8,8 +8,16 @@ typedef struct {
     int right;
     int top;
     int bottom;
+    int area;
+    int perimeter;
     char name[RECT_NAME_CHARS + 1];
 } Rectangle;
+
+typedef struct {
+    Rectangle *r1, *r2;
+    Rectangle *unionRect;
+    Rectangle *sectRect; // Will be set to NULL if no intersection.
+} RectangleStatistics;
 
 typedef struct {
 

@@ -23,15 +23,18 @@ void showMenu() {
     //To read more about this check out : https://stackoverflow.com/questions/2347770/how-do-you-clear-the-console-screen-in-c
     printf("\e[1;1H\e[2J");
 
-  // Printing the options.
-  printf("Options:\n");
-  printf ("1. Create Random Fraction\n");
-  printf ("2. Get Fraction From User\n");
-  printf ("3. Display Fractions\n");
-  printf ("4. Evaluate Expression\n");
-  printf ("5. Display All Equations\n");
-  printf ("6. Quit\n");
-
+    // Printing the options.
+    printf("Rectangle Program Menu Options\n"
+           "==========================\n"
+           "1.  Insert User Rectangle\n"
+           "2.  Insert Random Rectangle\n"
+           "3.  Find Rectangle\n"
+           "4.  Delete Rectangle\n"
+           "5.  Find Union of Two Rectangles/Intersections Statistics\n"
+           "6.  Output Rectangles\n"
+           "7.  Output Union/Intersections Statistics\n"
+           "8.  Quit"
+    );
 }
 
 /*

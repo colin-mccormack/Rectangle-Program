@@ -35,4 +35,7 @@
   int getResponse();
 
 
+  void ClearConsole();
+
+
 #endif

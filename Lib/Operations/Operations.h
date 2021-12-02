@@ -20,10 +20,10 @@
 #define OP_INSERT_RD_RECT   2
 #define OP_FIND_RECT        3
 #define OP_DELETE_RECT      4
-#define OP_UNION_RECT       5
-#define OP_INTERSECT        6
+#define OP_COMPUTE          5
 
-#define OP_OUTPUT_RECT      7
+#define OP_OUTPUT_RECT      6
+#define OP_OUTPUT_STATS     7
 
 #define OP_QUIT_PROGRAM     8
 

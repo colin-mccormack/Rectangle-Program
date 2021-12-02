@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "Operations.h"
 #include "../Rectangle/Rectangle.h"
@@ -14,14 +15,18 @@ void RandomRect();
 void FindRect();
 
 void DeleteRect();
-void UnionRect();
-int IntersectRect();
-void DisplayAllEquations();
+
+void AllCalculations();
+
+void DisplayRectangles();
+
+void DisplayStats();
+
 void ClearConsole();
 
+void QuitProgram();
 
- void QuitProgram();
- void invalidCase();
+void invalidCase();
 
 function *getFunctionToRun(int Choice) {
 
@@ -43,18 +48,22 @@ function *getFunctionToRun(int Choice) {
         case OP_DELETE_RECT:
             return &DeleteRect;
 
-             // If user wants to find union of two rectangles
-         case OP_UNION_RECT:
-             return &UnionRect;
+            // If user wants to find union of two rectangles
+        case OP_COMPUTE:
+            return &AllCalculations;
 
             // If user wants to find intersection of two rectangles
         case OP_OUTPUT_RECT:
             return &DisplayRectangles;
 
-             // If user wants to close the program
-         case OP_QUIT_PROGRAM:
-             QuitProgram();
-             return NULL;
+            // If user wants to display all rectangles
+        case OP_OUTPUT_STATS:
+            return &DisplayStats;
+
+            // If user wants to close the program
+        case OP_QUIT_PROGRAM:
+            QuitProgram();
+            return NULL;
 
             // This is an easter egg hidden, this clears the console,
             // this was added by us to see if you would suffer through this much code reading.
@@ -106,6 +115,27 @@ static RectangleStatistics *__restrict unpack(const void*__restrict RS) {
 
 /*
 
+    Compute area
+
+*/
+
+int area(int length, int width) {
+    return length * width;
+}
+
+/*
+
+    Compute perimeter
+
+*/
+
+int perimeter(int length, int width) {
+    //added brackets for visual representation
+    return (2 * length) + (2 * width);
+}
+
+/*
+
    Insert user rectangle
 
  */
@@ -126,10 +156,39 @@ static void InsertUserRect(Rectangle *r) {
         printf("Enter the left coordinate :");
         scanf("%d", &r->left);
 
+        printf("Enter the name :");
+        scanf("%s", r->name);
+
+        fflush(stdin);
+
     } while (r->top < r->bottom || r->right < r->left);
+
+    //compute area and perimeter
+    r->area = area(r->top - r->bottom, r->right - r->left);
+    r->perimeter = perimeter(r->top - r->bottom, r->right - r->left);
+
+
 
     fflush(stdin);
 
+}
+
+/*
+
+   Create random name
+
+ */
+
+static void randomName(char fC, char lC, int numC,char *name) {
+
+    srand((unsigned int) rand());
+
+
+    //assign each character to mod of int = rand() based on a base of last char - first char
+    for (int i = 0; i < numC; i++)
+        name[i] = fC + (rand() % (lC - fC));
+
+    name[numC] = 0;
 }
 
 /*
@@ -138,23 +197,231 @@ static void InsertUserRect(Rectangle *r) {
 
 */
 
-void InsertRandomRect(Rectangle r) {
+static void InsertRandomRect(Rectangle *r) {
 
     //new random seed
     srand((unsigned int) rand());
 
     //set top value as any value less than max (top - 1) and then add one to avoid having possibility of 0
-    r.top = (rand() % (MPW_TOP-1)) + 1;
+    r->top = (rand() % (MPW_TOP - 1)) + 1;
     //set bottom to a value less than top
-    r.bottom = rand() % (r.top);
+    r->bottom = rand() % (r->top);
 
     //set right value as any value less than max (max_right - 1) and then add one to avoid having possibility of 0
-    r.right = (rand() % (MPW_RT-1)) + 1;
+    r->right = (rand() % (MPW_RT - 1)) + 1;
     //set left to a value less than right
-    r.left = rand() % (r.right);
+    r->left = rand() % (r->right);
+
+    randomName(RECT_MIN_NAME_CHAR, RECT_MAX_NAME_CHAR, RECT_NAME_CHARS,r->name);
+
+    //compute area and perimeter
+    r->area = area(r->top - r->bottom, r->right - r->left);
+    r->perimeter = perimeter(r->top - r->bottom, r->right - r->left);
+
+}
+
+
+/*
+
+   Find the union of two rectangles
+
+ */
+
+static void UnionRect(RectangleStatistics *r) {
+
+    //already storing two random rectangles
+    //abstraction to make code easier and less repetitive
+    Rectangle *r1 = r->r1;
+    Rectangle *r2 = r->r1;
+    Rectangle *r3 = r->unionRect;
+
+    //set the furthest top value (highest) to the union top value
+    r3->top = (r1->top < r2->top) ? r2->top : r1->top;
+    //printf ("\n\n The union testing rect is : (%i, ", r3->top);
+
+    //set the furthest bottom value (lowest) to the union bottom value
+    r3->bottom = (r1->bottom < r2->bottom) ? r1->bottom : r2->bottom;
+    //printf ("%i, ", r3->bottom);
+
+    //set the furthest right value (highest) to the union left value
+    r3->right = (r1->right < r2->right) ? r2->right : r1->right;
+    //printf ("%i, ", r3->right);
+
+    //set the furthest left value (lowest) to the union left value
+    r3->left = (r1->left < r2->left) ? r1->left : r2->left;
+    //printf ("%i)\n ", r3->left);
+
+    //compute area and perimeter
+    r3->area = area(r3->top - r3->bottom, r3->right - r3->left);
+    r3->perimeter = perimeter(r3->top - r3->bottom, r3->right - r3->left);
+
+}
+
+/*
+void UnionRectTesting() {
+
+    Rectangle r1, r2, r3Base;
+    Rectangle *r3 = &r3Base;
+
+    r1.top = 6;
+    r1.bottom = 4;
+    r1.right = 1;
+    r1.left = 0;
+
+    r2.top = 2;
+    r2.bottom = 0;
+    r2.right = 3;
+    r2.left = 2;
+
+    //set the furthest top value (highest) to the union top value
+    r3->top = (r1.top < r2.top) ? r2.top : r1.top;
+    printf ("\n\n The union testing rect is : (%i, ", r3->top);
+
+    //set the furthest bottom value (lowest) to the union bottom value
+    r3->bottom = (r1.bottom < r2.bottom) ? r1.bottom : r2.bottom;
+    printf ("%i, ", r3->bottom);
+
+    //set the furthest right value (highest) to the union left value
+    r3->right = (r1.right < r2.right) ? r2.right : r1.right;
+    printf ("%i, ", r3->right);
+
+    //set the furthest left value (lowest) to the union left value
+    r3->left = (r1.left < r2.left) ? r1.left : r2.left;
+    printf ("%i)\n ", r3->left);
+
+}
+ */
+
+static void IntersectRect(RectangleStatistics *r) {
+
+    //already storing two random rectangle's
+    //abstraction to make code easier and less repetitive
+    Rectangle *r1 = r->r1;
+    Rectangle *r2 = r->r1;
+    Rectangle *r3 = r->sectRect;
+
+    //set the answer to the closest top to the origin
+    r3->top = (r1->top < r2->top) ? r1->top : r2->top;
+    //printf ("%i, ", r3->top);
+
+    //set the answer to the furthest bottom from the origin
+    r3->bottom = (r1->bottom < r2->bottom) ? r2->bottom : r1->bottom;
+    //printf ("%i)\n", r3->bot);
+
+    //set the answer to the closest right line to the origin
+    r3->right = (r1->right < r2->right) ? r1->right : r2->right;
+    //printf ("%i, ", r3->rt);
+
+    r3->left = (r1->left < r2->left) ? r2->left : r1->left;
+    //printf ("(%i, ", r3->lt);
+
+    if (r3->bottom < r3->top && r3->left < r3->right) {
+        //valid rectangle
+        printf("The rectangle is valid!\n");
+        // printRectangle (r3);
+        //compute area and perimeter
+        r3->area = area(r3->top - r3->bottom, r3->right - r3->left);
+        r3->perimeter = perimeter(r3->top - r3->bottom, r3->right - r3->left);
+        return;
+    }
+
+    //if the rectangle is invalid then simply set the pointer to null
+    r3 = NULL;
+    printf("The rectangle is invalid.\n");
+
+}
+
+
+
+/*
+void IntersectRectTesting() {
+
+    Rectangle r1, r2, r3Base;
+    Rectangle *r3 = &r3Base;
+
+    r1.top = 6;
+    r1.bottom = 3;
+    r1.right = 4;
+    r1.left = 0;
+
+    r2.top = 2;
+    r2.bottom = 0;
+    r2.right = 3;
+    r2.left = 2;
+
+    //set the answer to the closest top to the origin
+    r3->top = (r1.top < r2.top) ? r1.top : r2.top;
+    //printf ("%i, ", r3->top);
+
+    //set the answer to the furthest bottom from the origin
+    r3->bottom = (r1.bottom < r2.bottom) ? r2.bottom : r1.bottom;
+    //printf ("%i)\n", r3->bot);
+
+    //set the answer to the closest right line to the origin
+    r3->right = (r1.right < r2.right) ? r1.right : r2.right;
+    //printf ("%i, ", r3->rt);
+
+    r3->left = (r1.left < r2.left) ? r2.left : r1.left;
+    //printf ("(%i, ", r3->lt);
+
+    if (r3->bottom < r3->top &&  r3->left < r3->right) {
+        //valid rectangle
+        printf("The rectangle is valid!\n");
+        // printRectangle (r3);
+    } else {
+        printf("The rectangle is invalid!\n");
+    }
+
+}
+ */
+
+void DisplayAllRectangles(const int Index,__attribute__((unused)) const char*__restrict Key,const void *__restrict R) {
+
+    Rectangle *r = unwrap(R);
+
+    printf("%i: %s, (%i, %i), (%i, %i), %i, %i\n",
+           Index, r->name, r->top, r->bottom, r->right, r->left, r->area, r->perimeter);
 
 
 }
+
+
+void DisplayAllStats(RectangleStatistics *rMath) {
+
+    char *preparedOutput = (char *) malloc(RECT_NAME_CHARS * 2 + 10);
+
+    //output union format :
+    /*
+        bcaad, (20, 50), (40, 60), 60, 200
+        dacdb, (30, 35), (50, 55), 80, 400
+        bcaad union dacdb 		= (20,35), (50, 60)
+        bcaad intersection dacdb 	= (30,50), (40, 55)
+     */
+
+    printf("%s, (%i, %i), (%i, %i), %i, %i\n",
+           rMath->r1->name, rMath->r1->top, rMath->r1->bottom, rMath->r1->right, rMath->r1->left, rMath->r1->area,
+           rMath->r1->perimeter);
+    printf("%s, (%i, %i), (%i, %i), %i, %i\n",
+           rMath->r2->name, rMath->r2->top, rMath->r2->bottom, rMath->r2->right, rMath->r2->left, rMath->r2->area,
+           rMath->r2->perimeter);
+
+    //preformat input, so it can be properly indented (left align with -30)
+    sprintf(preparedOutput, "%s union %s", rMath->r1->name, rMath->r2->name);
+    printf("%-30s = (%i,%i), (%i,%i)\n", preparedOutput, rMath->unionRect->top, rMath->unionRect->bottom,
+           rMath->unionRect->right, rMath->unionRect->left);
+    //print intersect rectangle if it's not NULL
+    if (rMath->sectRect != NULL)
+        printf("%-30s = (%i,%i), (%i,%i)\n", preparedOutput, rMath->sectRect->top, rMath->sectRect->bottom,
+               rMath->sectRect->right, rMath->sectRect->left);
+    else
+        printf("NONE\n");
+
+    printf("\n");
+
+}
+
+//Begin Operations
+
 
 /*
 
@@ -257,12 +524,40 @@ void AllCalculations() {
 
 }
 
-void DisplayAllEquations(){}
+/*
 
+   6. Display all rectangles
+
+*/
+
+void DisplayRectangles() {
+
+    printf("Here are your rectangles ... \n");
+    printf("Format : Name, (top, bottom), (right, left), area, perimeter\n");
+
+    //foreachRectangle (&(void) DisplayAllRectanlges(Rectangle *))
+    LinkedHashMap->forEach(RectanglesList,&DisplayAllRectangles);
+
+}
 
 /*
 
-  To Quit Program
+   7. Display all statistices
+
+*/
+
+void DisplayStats() {
+
+    printf("Here are your rectangles ... \n");
+    printf("Format : Name, (top, bottom), (right, left), area, perimeter\n");
+
+    //foreachstats (&(void) DisplayAllStats(RectangleStatistics *))
+
+}
+
+/*
+
+  8. To Quit Program
 
 */
 
