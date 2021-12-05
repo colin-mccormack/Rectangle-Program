@@ -161,13 +161,12 @@ static void InsertUserRect(Rectangle *r) {
 
         fflush(stdin);
 
+    //while the entered rectangle is not a valid rectangle, keep asking
     } while (r->top < r->bottom || r->right < r->left);
 
     //compute area and perimeter
     r->area = area(r->top - r->bottom, r->right - r->left);
     r->perimeter = perimeter(r->top - r->bottom, r->right - r->left);
-
-
 
     fflush(stdin);
 
@@ -179,10 +178,9 @@ static void InsertUserRect(Rectangle *r) {
 
  */
 
-static void randomName(char fC, char lC, int numC,char *name) {
+static void randomName(char fC, char lC, int numC, char *name) {
 
     srand((unsigned int) rand());
-
 
     //assign each character to mod of int = rand() based on a base of last char - first char
     for (int i = 0; i < numC; i++)
@@ -212,7 +210,8 @@ static void InsertRandomRect(Rectangle *r) {
     //set left to a value less than right
     r->left = rand() % (r->right);
 
-    randomName(RECT_MIN_NAME_CHAR, RECT_MAX_NAME_CHAR, RECT_NAME_CHARS,r->name);
+    //pass all charachter information including the number of chars plus one for null
+    randomName(RECT_MIN_NAME_CHAR, RECT_MAX_NAME_CHAR, RECT_NAME_CHARS+1, r->name);
 
     //compute area and perimeter
     r->area = area(r->top - r->bottom, r->right - r->left);
@@ -243,7 +242,7 @@ static void UnionRect(RectangleStatistics *r) {
     r3->bottom = (r1->bottom < r2->bottom) ? r1->bottom : r2->bottom;
     //printf ("%i, ", r3->bottom);
 
-    //set the furthest right value (highest) to the union left value
+    //set the furthest right value (highest) to the union right value
     r3->right = (r1->right < r2->right) ? r2->right : r1->right;
     //printf ("%i, ", r3->right);
 
@@ -327,10 +326,9 @@ static void IntersectRect(RectangleStatistics *r) {
 
     //if the rectangle is invalid then simply set the pointer to null
     r3 = NULL;
-    printf("The rectangle is invalid.\n");
+    printf("The rectangles do not intersect.\n");
 
 }
-
 
 
 /*
@@ -488,7 +486,48 @@ void FindRect() {
 
 */
 
-void DeleteRect() {}
+void DeleteRect() {
+
+    char searchKey[RECT_NAME_CHARS+1];
+    int choice = 0;
+    int indexKey;
+
+    while(1) {
+
+        printf ("Enter 1 to search by index or 2 to search by name : \n");
+        scanf ("%d", &choice);
+
+        if (choice == 1) {
+
+            printf("Please enter the index of the rectangle you wish to delete : \n");
+            scanf("%d", &indexKey);
+
+            //buffer flush in case function gets called again
+            fflush(stdin);
+
+            LinkedHashMap->DeleteIndex(RectanglesList, indexKey);
+
+            return;
+
+        }
+
+        if (choice == 2) { 
+
+            printf("Please enter the name of the rectangle you wish to delete : \n");
+            scanf("%s", searchKey);
+
+            //buffer flush in case function gets called again
+            fflush(stdin);
+
+            LinkedHashMap->DeleteKey(RectanglesList, searchKey);
+
+            return;
+
+        }
+
+    }
+
+}
 
 /*
 
