@@ -13,8 +13,8 @@ int main() {
 
     function *f = NULL;
 
+    //while handler function can run (not null)
     while((f = getFunctionToRun(getResponse()))!=NULL) f();
-
 
     return 0;
 }
