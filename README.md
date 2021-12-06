@@ -9,9 +9,9 @@ Runs the program using a handler function.
 Header file containing IO functions, 
 Interface between User and Program, 
 Globally declared programs include, 
-getResponse() => Get choice from user for menu selection,
-showMenu() => Clear console then display menu,
-ClearConsole() => Use regex code to clear all text from console
+- getResponse() => Get choice from user for menu selection,
+- showMenu() => Clear console then display menu,
+- ClearConsole() => Use regex code to clear all text from console
 
 
 ### Operations.h
@@ -19,7 +19,7 @@ Header file containing all functions created for specific operations,
 Including Insert Rectangle, Insert Random Rectangle, Intersection Rectangle, and so on...
 All those functions are abstracted away, the only visible functions are getFunctionToRun which returns a function pointer from a switch statement. The function pointer points to the appropriate void function that handles one operation at a time.
 These operation functions have no parameters, but will sometimes call functions like area or random rectangle which are locally declared in the operation.c file. Another global function defined in operations.h is initialize() which creates a rectangle or statistic linked hash map list of the size MAX_RECTS.
-Interesting : wrap(), pack(), unwrap(), unpack() functions are used to convert the void pointers used to store values in the linked hash map to the correct type (rectangle/statistics) in order for operations.c functions to be able to store/read values.
+- Interesting : wrap(), pack(), unwrap(), unpack() functions are used to convert the void pointers used to store values in the linked hash map to the correct type (rectangle/statistics) in order for operations.c functions to be able to store/read values.
 
 ### Rectangle.h
 Define structures for rectangles and rectangle statistics as set out in A04 parameters. 
@@ -42,16 +42,16 @@ As each key is hashed and stored, it is also placed in a linked list. Each node 
 
 #### Header
 Using linkedHashMapClass restricted as an external constant to allow for OOP there are many methods avaibale for connecting to our 'database'. These include :
-getLength => pointer returned by function delaration that takes in a linkedHashMap (structure that contains a linked hash map : it includes information like length, Cursor, MaxCapacity, all the nodes, as well as info on the nodes) value and returns the length of the total list,
-canStore => Length < MaxCapacity,
-put => Put node at location of hashed key,
-putAt => Create new node and put in hash table as well as adding it to the linked list,
-getByKey => Search by string key,
-getByIndex => Search by numeric index (refrence to location in linked list),
-forEach => Parameter includes function pointer so you can run a function over all values in the forEach functions scope (restricted scope based on parameter rectangles/statistics),
-DeleteKey => Delete by key,
-DeleteIndex => Delete by index,
-DeleteMap => Delete an entire map (parameter of map type)
+- getLength => pointer returned by function delaration that takes in a linkedHashMap (structure that contains a linked hash map : it includes information like length, Cursor, - - MaxCapacity, all the nodes, as well as info on the nodes) value and returns the length of the total list,
+- canStore => Length < MaxCapacity,
+- put => Put node at location of hashed key,
+- putAt => Create new node and put in hash table as well as adding it to the linked list,
+- getByKey => Search by string key,
+- getByIndex => Search by numeric index (refrence to location in linked list),
+- forEach => Parameter includes function pointer so you can run a function over all values in the forEach functions scope (restricted scope based on parameter - - rectangles/statistics),
+- DeleteKey => Delete by key,
+- DeleteIndex => Delete by index,
+- DeleteMap => Delete an entire map (parameter of map type)
 
 ## Authors
 
