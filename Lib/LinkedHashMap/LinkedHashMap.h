@@ -8,7 +8,7 @@ typedef struct {
     LinkedHashMapType (*const new)(const int Capacity);
 
     int (*const getLength)(LinkedHashMapType);
-    int (*const canStore) (LinkedHashMapType);
+    int (*const canStore) (LinkedHashMapT                                                                            ype);
 
     void (*const put)(LinkedHashMapType,char *__restrict StringKey, void *__restrict Instance);
     void (*const putAt)(LinkedHashMapType,char *__restrict StringKey, void *__restrict Instance, int Index);

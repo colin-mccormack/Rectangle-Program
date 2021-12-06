@@ -494,7 +494,7 @@ void DeleteRect() {
 
     while(1) {
 
-        printf ("Enter 1 to search by index or 2 to search by name : \n");
+        printf ("\nEnter 1 to search by index or 2 to search by name : \n");
         scanf ("%d", &choice);
 
         if (choice == 1) {
