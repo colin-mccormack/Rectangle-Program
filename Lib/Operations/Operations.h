@@ -32,6 +32,8 @@
 #define OP_MUL '*'
 #define OP_DIV '/'
 
+#define invalidRect r->top < r->bottom || r->right < r->left
+
 
 // Data Type of the function that will be returned
 typedef void function();

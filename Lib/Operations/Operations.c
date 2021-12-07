@@ -7,6 +7,7 @@
 #include "../LinkedHashMap/LinkedHashMap.h"
 
 #define DISPLAY_INVALID_OPTION_ERROR printf("No working case. Retry.\n");
+#define DISPLAY_INVALID_RECT_ERROR printf("Incorrect rectangle parameters. Retry.\n");
 
 void UserRect();
 
@@ -144,25 +145,29 @@ static void InsertUserRect(Rectangle *r) {
 
     do {
 
-        printf("Enter the top coordinate :");
+        printf("Enter the top coordinate : ");
         scanf("%d", &r->top);
 
-        printf("Enter the bottom coordinate :");
+        printf("Enter the bottom coordinate : ");
         scanf("%d", &r->bottom);
 
-        printf("Enter the right coordinate :");
+        printf("Enter the right coordinate : ");
         scanf("%d", &r->right);
 
-        printf("Enter the left coordinate :");
+        printf("Enter the left coordinate : ");
         scanf("%d", &r->left);
 
-        printf("Enter the name :");
+        printf("Enter the name : ");
         scanf("%s", r->name);
 
         fflush(stdin);
 
+        //if error then display error message
+        if(invalidRect)
+            DISPLAY_INVALID_RECT_ERROR
+
     //while the entered rectangle is not a valid rectangle, keep asking
-    } while (r->top < r->bottom || r->right < r->left);
+    } while (invalidRect);
 
     //compute area and perimeter
     r->area = area(r->top - r->bottom, r->right - r->left);
