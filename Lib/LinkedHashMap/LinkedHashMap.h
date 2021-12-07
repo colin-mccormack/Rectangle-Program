@@ -1,14 +1,28 @@
 #ifndef LINKED_HASH_MAP
 #define LINKED_HASH_MAP
 
+/*
+
+    LinkedHashMapType
+
+    The variable type for the LinkedHashMap
+
+*/
 typedef struct linkedHashMap *__restrict LinkedHashMapType;
+
+
+/*
+
+
+
+ */
 
 typedef struct {
 
     LinkedHashMapType (*const new)(const int Capacity);
 
     int (*const getLength)(LinkedHashMapType);
-    int (*const canStore) (LinkedHashMapT                                                                            ype);
+    int (*const canStore) (LinkedHashMapType);
 
     void (*const put)(LinkedHashMapType,char *__restrict StringKey, void *__restrict Instance);
     void (*const putAt)(LinkedHashMapType,char *__restrict StringKey, void *__restrict Instance, int Index);

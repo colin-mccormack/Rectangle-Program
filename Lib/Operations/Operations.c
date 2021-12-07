@@ -36,7 +36,7 @@ function *getFunctionToRun(int Choice) {
         case OP_INSERT_USER_RECT:
             return &UserRect;
 
-            // If users wants the program to store a rectanglge
+            // If users wants the program to store a rectangle
         case OP_INSERT_RD_RECT:
             return &RandomRect;
 
@@ -65,7 +65,7 @@ function *getFunctionToRun(int Choice) {
             QuitProgram();
             return NULL;
 
-            // This is an easter egg hidden, this clears the console,
+            // This is an Easter egg hidden, this clears the console,
             // this was added by us to see if you would suffer through this much code reading.
         case 256:
             return &ClearConsole;
@@ -97,19 +97,19 @@ void Initialize() {
 
  */
 
-static void *__restrict wrap(const Rectangle*__restrict R) {
+static inline void *__restrict wrap(const Rectangle*__restrict R) {
     return (void *) R;
 }
 
-static Rectangle *__restrict unwrap(const void*__restrict R) {
+static inline Rectangle *__restrict unwrap(const void*__restrict R) {
     return (Rectangle *) R;
 }
 
-static void *__restrict pack(const RectangleStatistics*__restrict RS) {
+static inline void *__restrict pack(const RectangleStatistics*__restrict RS) {
     return (void*) RS;
 }
 
-static RectangleStatistics *__restrict unpack(const void*__restrict RS) {
+static inline RectangleStatistics *__restrict unpack(const void*__restrict RS) {
     return (RectangleStatistics*) RS;
 }
 
@@ -178,7 +178,7 @@ static void InsertUserRect(Rectangle *r) {
 
  */
 
-static void randomName(char fC, char lC, int numC, char *name) {
+static void randomName(char fC,char lC,int numC,char *__restrict name) {
 
     srand((unsigned int) rand());
 
@@ -195,7 +195,7 @@ static void randomName(char fC, char lC, int numC, char *name) {
 
 */
 
-static void InsertRandomRect(Rectangle *r) {
+static void InsertRandomRect(Rectangle *__restrict r) {
 
     //new random seed
     srand((unsigned int) rand());
@@ -210,7 +210,7 @@ static void InsertRandomRect(Rectangle *r) {
     //set left to a value less than right
     r->left = rand() % (r->right);
 
-    //pass all charachter information including the number of chars plus one for null
+    //pass all character information including the number of chars plus one for null
     randomName(RECT_MIN_NAME_CHAR, RECT_MAX_NAME_CHAR, RECT_NAME_CHARS+1, r->name);
 
     //compute area and perimeter
@@ -226,9 +226,9 @@ static void InsertRandomRect(Rectangle *r) {
 
  */
 
-static void UnionRect(RectangleStatistics *r) {
+static void UnionRect(const RectangleStatistics *__restrict r) {
 
-    //already storing two random rectangles
+    //already storing two random rectangles'
     //abstraction to make code easier and less repetitive
     Rectangle *r1 = r->r1;
     Rectangle *r2 = r->r1;
@@ -256,42 +256,7 @@ static void UnionRect(RectangleStatistics *r) {
 
 }
 
-/*
-void UnionRectTesting() {
-
-    Rectangle r1, r2, r3Base;
-    Rectangle *r3 = &r3Base;
-
-    r1.top = 6;
-    r1.bottom = 4;
-    r1.right = 1;
-    r1.left = 0;
-
-    r2.top = 2;
-    r2.bottom = 0;
-    r2.right = 3;
-    r2.left = 2;
-
-    //set the furthest top value (highest) to the union top value
-    r3->top = (r1.top < r2.top) ? r2.top : r1.top;
-    printf ("\n\n The union testing rect is : (%i, ", r3->top);
-
-    //set the furthest bottom value (lowest) to the union bottom value
-    r3->bottom = (r1.bottom < r2.bottom) ? r1.bottom : r2.bottom;
-    printf ("%i, ", r3->bottom);
-
-    //set the furthest right value (highest) to the union left value
-    r3->right = (r1.right < r2.right) ? r2.right : r1.right;
-    printf ("%i, ", r3->right);
-
-    //set the furthest left value (lowest) to the union left value
-    r3->left = (r1.left < r2.left) ? r1.left : r2.left;
-    printf ("%i)\n ", r3->left);
-
-}
- */
-
-static void IntersectRect(RectangleStatistics *r) {
+static void IntersectRect(const RectangleStatistics *__restrict r) {
 
     //already storing two random rectangle's
     //abstraction to make code easier and less repetitive
@@ -330,48 +295,6 @@ static void IntersectRect(RectangleStatistics *r) {
 
 }
 
-
-/*
-void IntersectRectTesting() {
-
-    Rectangle r1, r2, r3Base;
-    Rectangle *r3 = &r3Base;
-
-    r1.top = 6;
-    r1.bottom = 3;
-    r1.right = 4;
-    r1.left = 0;
-
-    r2.top = 2;
-    r2.bottom = 0;
-    r2.right = 3;
-    r2.left = 2;
-
-    //set the answer to the closest top to the origin
-    r3->top = (r1.top < r2.top) ? r1.top : r2.top;
-    //printf ("%i, ", r3->top);
-
-    //set the answer to the furthest bottom from the origin
-    r3->bottom = (r1.bottom < r2.bottom) ? r2.bottom : r1.bottom;
-    //printf ("%i)\n", r3->bot);
-
-    //set the answer to the closest right line to the origin
-    r3->right = (r1.right < r2.right) ? r1.right : r2.right;
-    //printf ("%i, ", r3->rt);
-
-    r3->left = (r1.left < r2.left) ? r2.left : r1.left;
-    //printf ("(%i, ", r3->lt);
-
-    if (r3->bottom < r3->top &&  r3->left < r3->right) {
-        //valid rectangle
-        printf("The rectangle is valid!\n");
-        // printRectangle (r3);
-    } else {
-        printf("The rectangle is invalid!\n");
-    }
-
-}
- */
 
 void DisplayAllRectangles(const int Index,__attribute__((unused)) const char*__restrict Key,const void *__restrict R) {
 
@@ -581,7 +504,7 @@ void DisplayRectangles() {
 
 /*
 
-   7. Display all statistices
+   7. Display all statistics
 
 */
 
