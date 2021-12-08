@@ -3,8 +3,11 @@
 
 typedef struct {
     void (*const Open)();
+
     void (*const Close)();
+
     void (*const write)(const char *restrict s);
+
     void (*const writeLine)(const char *restrict s);
 } fileWriter;
 
@@ -14,7 +17,7 @@ typedef struct {
 //  FileWriter->writeLine([String (no new line)]), wrties the string into file, but adds \n at end making your life easy
 //  FileWriter->Close() // C
 
-extern const fileWriter* restrict FileWriter;
+extern const fileWriter *restrict FileWriter;
 
 
 #endif

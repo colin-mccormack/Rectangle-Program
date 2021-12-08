@@ -52,5 +52,4 @@ function *getFunctionToRun(int Choice);
 void Initialize();
 
 
-
 #endif //Operations.h

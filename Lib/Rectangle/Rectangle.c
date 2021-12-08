@@ -49,25 +49,7 @@ void DeleteStats(RectangleStatistics *__restrict R) {
     if (R->sectRect) free(R->sectRect);
 }
 
-void writeRectangles () {
-
-//    FileWriter->Open;
-//    FileWriter->writeLine("{");
-//
-//    change max rects to index!
-//
-//    for (int i = 0; i < MAX_RECTS; i++) {
-//        FileWriter->write(SerializeRect (Rectangle[i]));
-//        if (i != MAX_RECTS - 1)
-//            FileWriter->writeLine(",");
-//     }
-//
-//     FileWriter->writeLine("}");
-//     FileWriter->Close;
-
-}
-
-void writeStats () {
+void writeStats() {
 
 //    FileWriter->Open;
 //    FileWriter->writeLine("{");
@@ -113,11 +95,11 @@ void writeStats () {
 }
 
 
-static char * SerializeRect (Rectangle *__restrict R) {
+static char *SerializeRect(Rectangle *__restrict R) {
 
 }
 
-char * SerializeRectStats (Rectangle *__restrict RS) {
+char *SerializeRectStats(Rectangle *__restrict RS) {
 
 }
 
@@ -126,9 +108,7 @@ static const rectangleClass rectClass = {
         &new,
         &newRectStats,
         &Delete,
-        &DeleteStats,
-        &SerializeRect,
-        &SerializeRectStats
+        &DeleteStats
 };
 
 const rectangleClass *__restrict RectangleClass = &rectClass;

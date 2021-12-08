@@ -11,7 +11,6 @@
 #define MAX_NUMBER_OF_RECTANGLES 10
 
 
-
 #define MPW_LT 0
 #define MPW_RT 800
 #define MPW_BOT 0
@@ -30,7 +29,6 @@
 
 
 #define MALLOC_ERROR {printf("MALLOC ERROR"); exit(-1);};
-
 
 
 #endif

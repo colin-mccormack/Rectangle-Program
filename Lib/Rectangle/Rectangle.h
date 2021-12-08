@@ -22,18 +22,18 @@ typedef struct {
 typedef struct {
 
     Rectangle *__restrict (*const new)();
+
     RectangleStatistics *__restrict (*const newRectStats)();
 
     void (*const Delete)(Rectangle *__restrict);
+
     void (*const DeleteStats)(RectangleStatistics *__restrict);
 
-    char * (*const SerializeRect) (Rectangle *__restrict);
-    char * (*const SerializeRectStats) (Rectangle *__restrict);
 }
-rectangleClass;
+        rectangleClass;
 
 extern const rectangleClass *__restrict RectangleClass;
 
-static char * SerializeRect (Rectangle *__restrict);
+static char *SerializeRect(Rectangle *__restrict);
 
 #endif

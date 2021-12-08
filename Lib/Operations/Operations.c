@@ -98,21 +98,34 @@ void Initialize() {
 
  */
 
-static inline void *__restrict wrap(const Rectangle*__restrict R) {
+static inline void *__restrict wrap(const Rectangle *__restrict R) {
     return (void *) R;
 }
 
-static inline Rectangle *__restrict unwrap(const void*__restrict R) {
+static inline Rectangle *__restrict unwrap(const void *__restrict R) {
     return (Rectangle *) R;
 }
 
-static inline void *__restrict pack(const RectangleStatistics*__restrict RS) {
-    return (void*) RS;
+static inline void *__restrict pack(const RectangleStatistics *__restrict RS) {
+    return (void *) RS;
 }
 
-static inline RectangleStatistics *__restrict unpack(const void*__restrict RS) {
-    return (RectangleStatistics*) RS;
+static inline RectangleStatistics *__restrict unpack(const void *__restrict RS) {
+    return (RectangleStatistics *) RS;
 }
+
+/*
+
+    pop()
+
+ */
+
+static void *__restrict pop(LinkedHashMapType HashMap, const int Index) {
+    void *__restrict Value = LinkedHashMap->getByIndex(HashMap, Index);
+    LinkedHashMap->DeleteIndex(HashMap, Index);
+    return Value;
+}
+
 
 /*
 
@@ -163,10 +176,10 @@ static void InsertUserRect(Rectangle *r) {
         fflush(stdin);
 
         //if error then display error message
-        if(invalidRect)
+        if (invalidRect)
             DISPLAY_INVALID_RECT_ERROR
 
-    //while the entered rectangle is not a valid rectangle, keep asking
+        //while the entered rectangle is not a valid rectangle, keep asking
     } while (invalidRect);
 
     //compute area and perimeter
@@ -183,7 +196,7 @@ static void InsertUserRect(Rectangle *r) {
 
  */
 
-static void randomName(char fC,char lC,int numC,char *__restrict name) {
+static void randomName(char fC, char lC, int numC, char *__restrict name) {
 
     srand((unsigned int) rand());
 
@@ -216,7 +229,7 @@ static void InsertRandomRect(Rectangle *__restrict r) {
     r->left = rand() % (r->right);
 
     //pass all character information including the number of chars plus one for null
-    randomName(RECT_MIN_NAME_CHAR, RECT_MAX_NAME_CHAR, RECT_NAME_CHARS+1, r->name);
+    randomName(RECT_MIN_NAME_CHAR, RECT_MAX_NAME_CHAR, RECT_NAME_CHARS + 1, r->name);
 
     //compute area and perimeter
     r->area = area(r->top - r->bottom, r->right - r->left);
@@ -224,6 +237,58 @@ static void InsertRandomRect(Rectangle *__restrict r) {
 
 }
 
+/*
+    Sort by Name.
+ */
+
+static int binarySearch(LinkedHashMapType HashMap, int l, int r, const char *__restrict Key) {
+
+    int mid, x;
+
+    while (r >= l) {
+        mid = l + (r - l) / 2;
+
+        x = strcmp(
+                unwrap(LinkedHashMap->getByIndex(HashMap, mid))->name,
+                Key);
+
+        // If the element is present at the middle
+        // itself
+        if (!x)
+            return mid;
+
+            // If element is smaller than mid, then
+            // it can only be present in left subarray
+        else if (x > 0)
+            r = mid - 1;
+
+            // Else the element can only be present
+            // in right subarray
+        else l = mid + 1;
+    }
+
+    // We reach here when element is not
+    // present in array
+    return -1;
+}
+
+static void sort_and_insert(LinkedHashMapType HashMap, char *__restrict Key, void *__restrict Value) {
+
+    int length = LinkedHashMap->getLength(HashMap);
+
+    if (length == 0) {
+        LinkedHashMap->put(HashMap, Key, Value);
+        return;
+    }
+
+    int Index = binarySearch(HashMap, 0, length, Key);
+
+    if (Index < 0) Index = 0;
+    else if (Index > length) Index = length;
+
+
+    LinkedHashMap->putAt(HashMap, Key, Value, Index);
+}
 
 /*
 
@@ -303,7 +368,8 @@ static void IntersectRect(RectangleStatistics *__restrict r) {
 }
 
 
-void DisplayAllRectangles(const int Index,__attribute__((unused)) const char*__restrict Key,const void *__restrict R) {
+void
+DisplayAllRectangles(const int Index, __attribute__((unused)) const char *__restrict Key, const void *__restrict R) {
 
     Rectangle *r = unwrap(R);
 
@@ -313,10 +379,10 @@ void DisplayAllRectangles(const int Index,__attribute__((unused)) const char*__r
 }
 
 
-void DisplayAllStats(const int Index,__attribute__((unused)) const char*__restrict Key,const void *__restrict R) {
+void DisplayAllStats(const int Index, __attribute__((unused)) const char *__restrict Key, const void *__restrict R) {
 
     RectangleStatistics *rMath = unpack(R);
-    printf ("Currently printing rectangle : %i\n", Index);
+    printf("Currently printing rectangle : %i\n", Index);
 
     char *preparedOutput = (char *) malloc(RECT_NAME_CHARS * 2 + 10);
 
@@ -367,7 +433,7 @@ void UserRect() {
     Rectangle *r = RectangleClass->new();
     InsertUserRect(r);
     //store rectangle
-    LinkedHashMap->put(RectanglesList,r->name, wrap(r));
+    sort_and_insert(RectanglesList, r->name, wrap(r));
 
 }
 
@@ -382,7 +448,8 @@ void RandomRect() {
     Rectangle *r = RectangleClass->new();
     InsertRandomRect(r);
     //store rectangle
-    LinkedHashMap->put(RectanglesList, r->name, wrap(r));
+    sort_and_insert(RectanglesList, r->name, wrap(r));
+
 }
 
 /*
@@ -397,11 +464,11 @@ void FindRect() {
     char s[100];
 
     printf("Please Enter Rectangle name:\n>");
-    scanf("%s",s);
+    scanf("%s", s);
 
-    void *R = LinkedHashMap->getByKey(RectanglesList,s);
+    void *R = LinkedHashMap->getByKey(RectanglesList, s);
 
-    if(!R) {
+    if (!R) {
         printf("Rectangle Doesn't Exist\n");
         return;
     }
@@ -409,7 +476,7 @@ void FindRect() {
     Rectangle *r = unwrap(R);
 
     printf("Here's your rectangle...\n"
-            "%s, (%i, %i), (%i, %i), %i, %i\n",
+           "%s, (%i, %i), (%i, %i), %i, %i\n",
            r->name, r->top, r->bottom, r->right, r->left, r->area, r->perimeter);
 
 
@@ -423,14 +490,14 @@ void FindRect() {
 
 void DeleteRect() {
 
-    char searchKey[RECT_NAME_CHARS+1];
+    char searchKey[RECT_NAME_CHARS + 1];
     int choice = 0;
     int indexKey;
 
-    while(1) {
+    while (1) {
 
-        printf ("\nEnter 1 to search by index or 2 to search by name : \n");
-        scanf ("%d", &choice);
+        printf("\nEnter 1 to search by index or 2 to search by name : \n");
+        scanf("%d", &choice);
 
         if (choice == 1) {
 
@@ -446,7 +513,7 @@ void DeleteRect() {
 
         }
 
-        if (choice == 2) { 
+        if (choice == 2) {
 
             printf("Please enter the name of the rectangle you wish to delete : \n");
             scanf("%s", searchKey);
@@ -505,7 +572,7 @@ void AllCalculations() {
         //if the second one is greater, then swap them by using simple temp swap
         temp = r1;
         r1 = r2;
-        r2 =  temp;
+        r2 = temp;
     }
 
     //set the two members from the rectangle statistics to the random rectangles
@@ -522,9 +589,9 @@ void AllCalculations() {
     IntersectRect(rMath);
 
     //store values for this statistic math
-    LinkedHashMap->put(StatisticsList,rMath->r1->name, pack(rMath));
+    LinkedHashMap->put(StatisticsList, rMath->r1->name, pack(rMath));
 
-    printf ("Where you should now put!\n");
+    printf("Where you should now put!\n");
     DisplayAllStats(0, "\0", pack(rMath));
 
 }

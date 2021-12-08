@@ -7,7 +7,7 @@
 */
 
 #include <stdio.h>
-
+#include <stdlib.h>
 #include "IO.h"
 
 /*
@@ -17,11 +17,19 @@
   
 */
 
+static inline void clearScreen() {
+// For Platform Independence
+#if defined(__linux__) || defined(__unix__) || defined(__APPLE__)
+    system("clear");
+#endif
+#if defined(_WIN32) || defined(_WIN64)
+    system("cls");
+#endif
+}
+
 void showMenu() {
 
-    //Clearing Console of everything in it.
-    //To read more about this check out : https://stackoverflow.com/questions/2347770/how-do-you-clear-the-console-screen-in-c
-    printf("\e[1;1H\e[2J");
+    //clearScreen();
 
     // Printing the options.
     printf("Rectangle Program Menu Options\n"
