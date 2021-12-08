@@ -5,6 +5,7 @@
 #include "Operations.h"
 #include "../Rectangle/Rectangle.h"
 #include "../LinkedHashMap/LinkedHashMap.h"
+#include "../IO/FileWriter.h"
 
 #define DISPLAY_INVALID_OPTION_ERROR printf("No working case. Retry.\n");
 #define DISPLAY_INVALID_RECT_ERROR printf("Incorrect rectangle parameters. Retry.\n");
@@ -635,10 +636,81 @@ void DisplayStats() {
 
 */
 
+
+#define DOUBLE_INDENT "\t\t"
+#define TRIPLE_INDENT "\t\t\t"
+#define TEMP 100
+
+static void serializeRect(__attribute__((unused)) const int Index,const char *__restrict Key,const void *__restrict Value) {
+
+    char Temp[TEMP];
+
+    Rectangle *r = unwrap(Value);
+
+    // Name
+    snprintf(Temp,TEMP,DOUBLE_INDENT"\"%s\":{",Key);
+    FileWriter->writeLine(Temp);
+
+    // Properties
+
+    // Top
+    snprintf(Temp,TEMP,TRIPLE_INDENT"\"Top\":%i,",r->top);
+    FileWriter->writeLine(Temp);
+
+    // Bottom
+    snprintf(Temp,TEMP,TRIPLE_INDENT"\"Bottom\":%i,",r->bottom);
+    FileWriter->writeLine(Temp);
+
+    // Right
+    snprintf(Temp,TEMP,TRIPLE_INDENT"\"Right\":%i,",r->right);
+    FileWriter->writeLine(Temp);
+
+    // Left
+    snprintf(Temp,TEMP,TRIPLE_INDENT"\"Left\":%i,",r->left);
+    FileWriter->writeLine(Temp);
+
+    // Area
+    snprintf(Temp,TEMP,TRIPLE_INDENT"\"Area\":%i,",r->area);
+    FileWriter->writeLine(Temp);
+
+    // Perimeter
+    snprintf(Temp,TEMP,TRIPLE_INDENT"\"Perimeter\":%i,",r->perimeter);
+    FileWriter->writeLine(Temp);
+
+    // Closing Bracket
+    snprintf(Temp,TEMP,DOUBLE_INDENT"},",Key);
+    FileWriter->writeLine(Temp);
+
+}
+
 void QuitProgram() {
 
     printf("\nGood bye!\n");
 
+    /*
+
+        Writing into Files using JSON Format
+
+     */
+
+    FileWriter->Open();
+
+    // Open Bracket
+    FileWriter->writeLine("{");
+
+    // First Dictionary
+    FileWriter->writeLine("\t\"Rectangles\":{");
+
+    // Serializing all elements and printing it inside this dictionary
+    LinkedHashMap->forEach(RectanglesList,&serializeRect);
+
+    // Closing First Dictionary
+    FileWriter->writeLine("\t},");
+
+
+    FileWriter->writeLine("}");
+
+    FileWriter->Close();
 }
 
 /*
