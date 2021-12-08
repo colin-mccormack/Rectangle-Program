@@ -310,14 +310,17 @@ void DisplayAllRectangles(const int Index,__attribute__((unused)) const char*__r
     printf("%i: %s, (%i, %i), (%i, %i), %i, %i\n",
            Index, r->name, r->top, r->bottom, r->right, r->left, r->area, r->perimeter);
 
-
 }
 
 
-void DisplayAllStats(RectangleStatistics *rMath) {
+void DisplayAllStats(const int Index,__attribute__((unused)) const char*__restrict Key,const void *__restrict R) {
+
+    RectangleStatistics *rMath = unpack(R);
+    printf ("Currently printing rectangle : %i\n", Index);
 
     char *preparedOutput = (char *) malloc(RECT_NAME_CHARS * 2 + 10);
 
+    //if wanted index can show what rectangle to use
     //output union format :
     /*
         bcaad, (20, 50), (40, 60), 60, 200
@@ -518,8 +521,8 @@ void AllCalculations() {
     //find and store intersect value
     IntersectRect(rMath);
 
-    //printf ("Where you should now put!\n");
-    DisplayAllStats(rMath);
+    printf ("Where you should now put!\n");
+    DisplayAllStats(0, "\0", pack(rMath));
 
 }
 
@@ -535,7 +538,7 @@ void DisplayRectangles() {
     printf("Format : Name, (top, bottom), (right, left), area, perimeter\n");
 
     //foreachRectangle (&(void) DisplayAllRectanlges(Rectangle *))
-    LinkedHashMap->forEach(RectanglesList,&DisplayAllRectangles);
+    LinkedHashMap->forEach(RectanglesList, &DisplayAllRectangles);
 
 }
 
@@ -547,8 +550,10 @@ void DisplayRectangles() {
 
 void DisplayStats() {
 
-    printf("Here are your rectangles ... \n");
-    printf("Format : Name, (top, bottom), (right, left), area, perimeter\n");
+    printf("Here are your statistics ... \n");
+    //printf("Format : Name, (top, bottom), (right, left), area, perimeter\n");
+
+    LinkedHashMap->forEach(StatisticsList, &DisplayAllStats);
 
     //foreachstats (&(void) DisplayAllStats(RectangleStatistics *))
 
