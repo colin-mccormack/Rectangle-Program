@@ -236,10 +236,11 @@ static void UnionRect(const RectangleStatistics *__restrict r) {
     //already storing two random rectangles'
     //abstraction to make code easier and less repetitive
     Rectangle *r1 = r->r1;
-    Rectangle *r2 = r->r1;
+    Rectangle *r2 = r->r2;
     Rectangle *r3 = r->unionRect;
 
     //set the furthest top value (highest) to the union top value
+    // printf ("Union rect default is : %i\n", r1->top);
     r3->top = (r1->top < r2->top) ? r2->top : r1->top;
     //printf ("\n\n The union testing rect is : (%i, ", r3->top);
 
@@ -261,12 +262,12 @@ static void UnionRect(const RectangleStatistics *__restrict r) {
 
 }
 
-static void IntersectRect(const RectangleStatistics *__restrict r) {
+static void IntersectRect(RectangleStatistics *__restrict r) {
 
     //already storing two random rectangle's
     //abstraction to make code easier and less repetitive
     Rectangle *r1 = r->r1;
-    Rectangle *r2 = r->r1;
+    Rectangle *r2 = r->r2;
     Rectangle *r3 = r->sectRect;
 
     //set the answer to the closest top to the origin
@@ -275,18 +276,18 @@ static void IntersectRect(const RectangleStatistics *__restrict r) {
 
     //set the answer to the furthest bottom from the origin
     r3->bottom = (r1->bottom < r2->bottom) ? r2->bottom : r1->bottom;
-    //printf ("%i)\n", r3->bot);
+    //printf ("%i)\n", r3->bottom);
 
     //set the answer to the closest right line to the origin
     r3->right = (r1->right < r2->right) ? r1->right : r2->right;
-    //printf ("%i, ", r3->rt);
+    //printf ("%i, ", r3->right);
 
     r3->left = (r1->left < r2->left) ? r2->left : r1->left;
-    //printf ("(%i, ", r3->lt);
+    //printf ("(%i, ", r3->left);
 
     if (r3->bottom < r3->top && r3->left < r3->right) {
         //valid rectangle
-        printf("The rectangle is valid!\n");
+        //printf("The rectangle intersection is valid!\n");
         // printRectangle (r3);
         //compute area and perimeter
         r3->area = area(r3->top - r3->bottom, r3->right - r3->left);
@@ -295,8 +296,9 @@ static void IntersectRect(const RectangleStatistics *__restrict r) {
     }
 
     //if the rectangle is invalid then simply set the pointer to null
-    r3 = NULL;
-    printf("The rectangles do not intersect.\n");
+    r->sectRect = NULL;
+    //printf ("%p", r->sectRect);
+    //printf("The rectangles do not intersect.\n");
 
 }
 
@@ -335,12 +337,14 @@ void DisplayAllStats(RectangleStatistics *rMath) {
     sprintf(preparedOutput, "%s union %s", rMath->r1->name, rMath->r2->name);
     printf("%-30s = (%i,%i), (%i,%i)\n", preparedOutput, rMath->unionRect->top, rMath->unionRect->bottom,
            rMath->unionRect->right, rMath->unionRect->left);
+
     //print intersect rectangle if it's not NULL
+    sprintf(preparedOutput, "%s intersection %s", rMath->r1->name, rMath->r2->name);
     if (rMath->sectRect != NULL)
         printf("%-30s = (%i,%i), (%i,%i)\n", preparedOutput, rMath->sectRect->top, rMath->sectRect->bottom,
                rMath->sectRect->right, rMath->sectRect->left);
     else
-        printf("NONE\n");
+        printf("Intersection : NONE\n");
 
     printf("\n");
 
@@ -359,7 +363,7 @@ void UserRect() {
 
     Rectangle *r = RectangleClass->new();
     InsertUserRect(r);
-    //store rectangle\
+    //store rectangle
     LinkedHashMap->put(RectanglesList,r->name, wrap(r));
 
 }
@@ -465,28 +469,56 @@ void DeleteRect() {
 
 void AllCalculations() {
 
-    RectangleStatistics *rMath = RectangleClass->newRectStats();
-    Rectangle *temp;
+
+    RectangleStatistics *rMath = unpack(RectangleClass->newRectStats());
+    Rectangle *temp, *r1, *r2;
+
+    int length = LinkedHashMap->getLength(RectanglesList);
+
+    //if length is zero, no check possible
+    if (length == 0) {
+        invalidCase();
+        return;
+    }
+
+    void *r1p, *r2p;
 
     //get two random rectangles
-    InsertRandomRect(rMath->r1);
-    InsertRandomRect(rMath->r2);
+    //while the rectangles are teh same keep getting new ones
+    do {
+
+        srand((unsigned int) rand());
+        r1p = LinkedHashMap->getByIndex(RectanglesList, (rand() % length));
+        r2p = LinkedHashMap->getByIndex(RectanglesList, (rand() % length));
+
+    } while (r1p == r2p);
+
+    r1 = unwrap(r1p);
+    r2 = unwrap(r2p);
 
     //sort them
     //decide which rectangle goes first alphabetically
-    if (strcmp(rMath->r1->name, rMath->r2->name) > 0) {
+    if (strcmp(r1->name, r2->name) > 0) {
         //if the second one is greater, then swap them by using simple temp swap
-        temp = rMath->r1;
-        rMath->r1 = rMath->r2;
-        rMath->r2 =  temp;
+        temp = r1;
+        r1 = r2;
+        r2 =  temp;
     }
+
+    //set the two members from the rectangle statistics to the random rectangles
+    rMath->r1 = r1;
+    rMath->r2 = r2;
+    rMath->unionRect = RectangleClass->new();
+    rMath->sectRect = RectangleClass->new();
 
     //find and store union value
     UnionRect(rMath);
 
+    //printf ("This far\n");
     //find and store intersect value
     IntersectRect(rMath);
 
+    //printf ("Where you should now put!\n");
     DisplayAllStats(rMath);
 
 }
