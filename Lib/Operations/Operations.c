@@ -590,9 +590,9 @@ void AllCalculations() {
     IntersectRect(rMath);
 
     //store values for this statistic math
-    LinkedHashMap->put(StatisticsList, rMath->r1->name, pack(rMath));
+    sort_and_insert(StatisticsList, rMath->r1->name, pack(rMath));
 
-    printf("Where you should now put!\n");
+    //printf("Where you should now put!\n");
     DisplayAllStats(0, "\0", pack(rMath));
 
 }
