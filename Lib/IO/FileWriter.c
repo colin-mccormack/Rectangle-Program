@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "FileWriter.h"
 
-#define FILE_PATH   "../Out/rectangletxt.txt"
+#define FILE_PATH   "../Out/rectangletxt.json"
 #define ACCESS_MODE "w"
 
 
