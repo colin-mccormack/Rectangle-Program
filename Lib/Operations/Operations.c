@@ -383,9 +383,13 @@ DisplayAllRectangles(const int Index, __attribute__((unused)) const char *__rest
 void DisplayAllStats(const int Index, __attribute__((unused)) const char *__restrict Key, const void *__restrict R) {
 
     RectangleStatistics *rMath = unpack(R);
-    printf("Currently printing rectangle : %i\n", Index);
+    Rectangle
+            *r1 = rMath->r1,
+            *r2 = rMath->r2,
+            *union_rect = rMath->unionRect,
+            *sect_rect = rMath->sectRect;
 
-    char *preparedOutput = (char *) malloc(RECT_NAME_CHARS * 2 + 10);
+    printf("Currently printing rectangle : %i\n", Index);
 
     //if wanted index can show what rectangle to use
     //output union format :
@@ -397,22 +401,25 @@ void DisplayAllStats(const int Index, __attribute__((unused)) const char *__rest
      */
 
     printf("%s, (%i, %i), (%i, %i), %i, %i\n",
-           rMath->r1->name, rMath->r1->top, rMath->r1->bottom, rMath->r1->right, rMath->r1->left, rMath->r1->area,
-           rMath->r1->perimeter);
+           r1->name, r1->top, r1->bottom, r1->right, r1->left, r1->area,
+           r1->perimeter);
     printf("%s, (%i, %i), (%i, %i), %i, %i\n",
-           rMath->r2->name, rMath->r2->top, rMath->r2->bottom, rMath->r2->right, rMath->r2->left, rMath->r2->area,
-           rMath->r2->perimeter);
+           r2->name, r2->top, r2->bottom, r2->right, r2->left, r2->area,
+           r2->perimeter);
 
     //preformat input, so it can be properly indented (left align with -30)
-    sprintf(preparedOutput, "%s union %s", rMath->r1->name, rMath->r2->name);
-    printf("%-30s = (%i,%i), (%i,%i)\n", preparedOutput, rMath->unionRect->top, rMath->unionRect->bottom,
-           rMath->unionRect->right, rMath->unionRect->left);
+    printf("%s union %s = (%i,%i), (%i,%i)\n",
+           r1->name, r2->name, union_rect->top,
+           union_rect->bottom,
+           union_rect->right, union_rect->left);
 
     //print intersect rectangle if it's not NULL
-    sprintf(preparedOutput, "%s intersection %s", rMath->r1->name, rMath->r2->name);
-    if (rMath->sectRect != NULL)
-        printf("%-30s = (%i,%i), (%i,%i)\n", preparedOutput, rMath->sectRect->top, rMath->sectRect->bottom,
-               rMath->sectRect->right, rMath->sectRect->left);
+    if (sect_rect != NULL)
+        printf(
+                "%s intersection %s = (%i,%i), (%i,%i)\n",
+                r1->name, r2->name, sect_rect->top,
+                sect_rect->bottom,
+                sect_rect->right, sect_rect->left);
     else
         printf("Intersection : NONE\n");
 
@@ -493,16 +500,20 @@ void DeleteRect() {
 
     char searchKey[RECT_NAME_CHARS + 1];
     int choice = 0;
+    int lenght = LinkedHashMap->getLength(RectanglesList) - 1;
     int indexKey;
 
     while (1) {
 
-        printf("\nEnter 1 to search by index or 2 to search by name : \n");
+        printf("\nEnter 1 to search by index or 2 to search by name : \n>");
         scanf("%d", &choice);
 
         if (choice == 1) {
 
-            printf("Please enter the index of the rectangle you wish to delete : \n");
+            // Using Goto here isnt bad, it's a bad practice
+            // if its abused and is used to make a spaghetti code
+
+            printf("Please enter the index of the rectangle you wish to delete : \n>");
             scanf("%d", &indexKey);
 
             //buffer flush in case function gets called again
@@ -516,11 +527,15 @@ void DeleteRect() {
 
         if (choice == 2) {
 
-            printf("Please enter the name of the rectangle you wish to delete : \n");
+            // lol, I am seriously bored at this moment after speed running
+            // an essay and submitting in 10 mins ago
+
+            printf("Please enter the name of the rectangle you wish to delete : \n>");
             scanf("%s", searchKey);
 
             //buffer flush in case function gets called again
             fflush(stdin);
+
 
             LinkedHashMap->DeleteKey(RectanglesList, searchKey);
 
@@ -540,7 +555,6 @@ void DeleteRect() {
 
 void AllCalculations() {
 
-
     RectangleStatistics *rMath = unpack(RectangleClass->newRectStats());
     Rectangle *temp, *r1, *r2;
 
@@ -556,13 +570,14 @@ void AllCalculations() {
 
     //get two random rectangles
     //while the rectangles are teh same keep getting new ones
-    do {
 
-        srand((unsigned int) rand());
-        r1p = LinkedHashMap->getByIndex(RectanglesList, (rand() % length));
+
+    srand((unsigned int) rand());
+
+    r1p = LinkedHashMap->getByIndex(RectanglesList, (rand() % length));
+    do
         r2p = LinkedHashMap->getByIndex(RectanglesList, (rand() % length));
-
-    } while (r1p == r2p);
+    while (r1p == r2p);
 
     r1 = unwrap(r1p);
     r2 = unwrap(r2p);
@@ -577,8 +592,8 @@ void AllCalculations() {
     }
 
     //set the two members from the rectangle statistics to the random rectangles
-    rMath->r1 = r1;
-    rMath->r2 = r2;
+    rMath->r1 = unwrap(r1);
+    rMath->r2 = unwrap(r2);
     rMath->unionRect = RectangleClass->new();
     rMath->sectRect = RectangleClass->new();
 
@@ -626,8 +641,6 @@ void DisplayStats() {
 
     LinkedHashMap->forEach(StatisticsList, &DisplayAllStats);
 
-    //foreachstats (&(void) DisplayAllStats(RectangleStatistics *))
-
 }
 
 /*
@@ -638,7 +651,9 @@ void DisplayStats() {
 
 #define SINGLE_INDENT "  "
 #define DOUBLE_INDENT SINGLE_INDENT""SINGLE_INDENT
-#define TRIPLE_INDENT SINGLE_INDENT""SINGLE_INDENT""SINGLE_INDENT
+#define TRIPLE_INDENT DOUBLE_INDENT""SINGLE_INDENT
+#define QUADRIPLE_INDENT DOUBLE_INDENT""DOUBLE_INDENT
+#define QUINTIPLE_INDENT QUADRIPLE_INDENT""SINGLE_INDENT
 #define BUFFER_SIZE 1000
 
 static void serializeRect(const int Index, const char *__restrict Key, const void *__restrict Value) {
@@ -657,7 +672,7 @@ static void serializeRect(const int Index, const char *__restrict Key, const voi
              */
 
             Buffer,
-             BUFFER_SIZE,
+            BUFFER_SIZE,
 
             /*
 
@@ -667,37 +682,135 @@ static void serializeRect(const int Index, const char *__restrict Key, const voi
 
 
             //Name & Open Bracket
-             DOUBLE_INDENT"\"%s\": {\n"
-             //Top
-             TRIPLE_INDENT"\"Top\": %i,\n"
-             //Bottom
-             TRIPLE_INDENT"\"Bottom\": %i,\n"
-             //Right
-             TRIPLE_INDENT"\"Right\": %i,\n"
-             //Left
-             TRIPLE_INDENT"\"Left\": %i,\n"
-             //Area
-             TRIPLE_INDENT"\"Area\": %i,\n"
-             //Perimeter
-             TRIPLE_INDENT"\"Perimeter\": %i\n"
-             // Close Bracket
-             DOUBLE_INDENT"}%c",
+            DOUBLE_INDENT"\"%s\": {\n"
+            //Top
+            TRIPLE_INDENT"\"Top\": %i,\n"
+            //Bottom
+            TRIPLE_INDENT"\"Bottom\": %i,\n"
+            //Right
+            TRIPLE_INDENT"\"Right\": %i,\n"
+            //Left
+            TRIPLE_INDENT"\"Left\": %i,\n"
+            //Area
+            TRIPLE_INDENT"\"Area\": %i,\n"
+            //Perimeter
+            TRIPLE_INDENT"\"Perimeter\": %i\n"
+            // Close Bracket
+            DOUBLE_INDENT"}%c",
 
-             /*
+            /*
 
-                Passing the parameters
+               Passing the parameters
 
-              */
+             */
 
-             Key, r->top, r->bottom, r->right, r->left, r->area, r->perimeter,
+            Key, r->top, r->bottom, r->right, r->left, r->area, r->perimeter,
 
-             // We are only adding a comma if there is another
-             (Index != LinkedHashMap->getLength(RectanglesList)-1) ? ',' : '\0'
+            // We are only adding a comma if there is another
+            (Index != LinkedHashMap->getLength(RectanglesList) - 1) ? ',' : '\0'
     );
 
 
     FileWriter->writeLine(Buffer);
 
+}
+
+static void serializeToFile(const int Comma, const char *__restrict Key, const Rectangle *__restrict r) {
+
+    char stream[BUFFER_SIZE];
+
+    sprintf(
+
+            /*
+
+                Stream : Buffer
+
+             */
+
+            stream,
+
+            /*
+
+                Printing format
+
+             */
+
+
+            //Name & Open Bracket
+            QUADRIPLE_INDENT"\"%s\": {\n"
+            //Top
+            QUINTIPLE_INDENT"\"Top\": %i,\n"
+            //Bottom
+            QUINTIPLE_INDENT"\"Bottom\": %i,\n"
+            //Right
+            QUINTIPLE_INDENT"\"Right\": %i,\n"
+            //Left
+            QUINTIPLE_INDENT"\"Left\": %i,\n"
+            //Area
+            QUINTIPLE_INDENT"\"Area\": %i,\n"
+            //Perimeter
+            QUINTIPLE_INDENT"\"Perimeter\": %i\n"
+            // Close Bracket
+            QUADRIPLE_INDENT"}%c",
+
+            /*
+
+               Passing the parameters
+
+             */
+
+            Key, r->top, r->bottom, r->right, r->left, r->area, r->perimeter,
+
+            // We are only adding a comma if there is another
+            (Comma) ? ',' : '\0'
+    );
+
+    FileWriter->writeLine(stream);
+
+}
+
+#define YES_COMMA 1
+#define NO_COMMA  0
+
+static void serializeStats(const int Index, const char *__restrict Key, const void *__restrict Value) {
+
+    char Buffer[BUFFER_SIZE];
+
+    RectangleStatistics *RS = unpack(Value);
+
+    Rectangle
+            *r1 = RS->r1,
+            *r2 = RS->r2,
+            *unionRect = RS->unionRect,
+            *sectRect = RS->sectRect;
+
+    // Statistics Number
+    sprintf(Buffer,
+            DOUBLE_INDENT"\"%i\": {\n"
+            TRIPLE_INDENT"\"Rectangles\": {\n",
+            Index);
+
+    FileWriter->writeLine(Buffer);
+
+    serializeToFile(YES_COMMA, r1->name, r1);
+    serializeToFile(NO_COMMA, r2->name, r2);
+
+    sprintf(Buffer,
+            TRIPLE_INDENT"},\n"
+            TRIPLE_INDENT"\"Statistics\": {\n");
+
+    FileWriter->writeLine(Buffer);
+
+    serializeToFile(YES_COMMA, "union-rect", unionRect);
+    if (sectRect) serializeToFile(NO_COMMA, "sect-rect", sectRect);
+    else FileWriter->writeLine(QUADRIPLE_INDENT"\"sect-rect\":  null\n");
+
+    sprintf(Buffer,
+            TRIPLE_INDENT"}\n"
+            DOUBLE_INDENT"}%c",
+            (Index != LinkedHashMap->getLength(StatisticsList) - 1) ? ',' : '\0');
+
+    FileWriter->writeLine(Buffer);
 }
 
 void QuitProgram() {
@@ -710,30 +823,39 @@ void QuitProgram() {
 
      */
 
+    // Opening File
     FileWriter->Open();
+
+    printf("Saving Rectangles....\n");
+
 
     // Open Bracket
     FileWriter->writeLine("{");
-
     // First Dictionary
     FileWriter->writeLine(SINGLE_INDENT"\"Rectangles\": {");
-
     // Serializing all elements and printing it inside this dictionary
     LinkedHashMap->forEach(RectanglesList, &serializeRect);
-
     // Closing First Dictionary
-    FileWriter->writeLine(SINGLE_INDENT"}");
+    FileWriter->writeLine(SINGLE_INDENT"},");
 
-
-    FileWriter->writeLine("}");
-
-    FileWriter->Close();
 
     printf("Saved Rectangles...\n");
 
     printf("Saving Statistics....\n");
 
+
+    // Second Dictionary
+    FileWriter->writeLine(SINGLE_INDENT"\"Rectangle Statistics\": {");
+    // Serializing all stats and printing in inside this dictionary
+    LinkedHashMap->forEach(StatisticsList, &serializeStats);
+    // Closing all dictionaries
+    FileWriter->writeLine(SINGLE_INDENT"}\n}");
+    // Closing File
+    FileWriter->Close();
+
+
     printf("Saved Statistics...\n");
+
 
     printf("\nGood bye!\n");
 

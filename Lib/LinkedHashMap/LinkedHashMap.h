@@ -22,18 +22,23 @@ typedef struct {
     LinkedHashMapType (*const new)(const int Capacity);
 
     int (*const getLength)(LinkedHashMapType);
-    int (*const canStore) (LinkedHashMapType);
 
-    void (*const put)(LinkedHashMapType,char *__restrict StringKey, void *__restrict Instance);
-    void (*const putAt)(LinkedHashMapType,char *__restrict StringKey, void *__restrict Instance, int Index);
+    int (*const canStore)(LinkedHashMapType);
 
-    void *(*const getByKey)(LinkedHashMapType,const char *__restrict StringKey);
-    void *(*const getByIndex)(LinkedHashMapType,const int Index);
+    void (*const put)(LinkedHashMapType, char *__restrict StringKey, void *__restrict Instance);
 
-    void (*const forEach)(LinkedHashMapType,void(*f)(const int Index, const char *__restrict StringKey, const void *__restrict Value));
+    void (*const putAt)(LinkedHashMapType, char *__restrict StringKey, void *__restrict Instance, int Index);
 
-    void (*const DeleteKey)(LinkedHashMapType,const char *__restrict StringKey);
-    void (*const DeleteIndex)(LinkedHashMapType,const int Index);
+    void *(*const getByKey)(LinkedHashMapType, const char *__restrict StringKey);
+
+    void *(*const getByIndex)(LinkedHashMapType, const int Index);
+
+    void (*const forEach)(LinkedHashMapType,
+                          void(*f)(const int Index, const char *__restrict StringKey, const void *__restrict Value));
+
+    void (*const DeleteKey)(LinkedHashMapType, const char *__restrict StringKey);
+
+    void (*const DeleteIndex)(LinkedHashMapType, const int Index);
 
     void (*const DeleteMap)(LinkedHashMapType);
 
