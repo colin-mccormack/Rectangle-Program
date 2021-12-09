@@ -636,56 +636,73 @@ void DisplayStats() {
 
 */
 
+#define SINGLE_INDENT "  "
+#define DOUBLE_INDENT SINGLE_INDENT""SINGLE_INDENT
+#define TRIPLE_INDENT SINGLE_INDENT""SINGLE_INDENT""SINGLE_INDENT
+#define BUFFER_SIZE 1000
 
-#define DOUBLE_INDENT "\t\t"
-#define TRIPLE_INDENT "\t\t\t"
-#define TEMP 100
+static void serializeRect(const int Index, const char *__restrict Key, const void *__restrict Value) {
 
-static void serializeRect(__attribute__((unused)) const int Index,const char *__restrict Key,const void *__restrict Value) {
 
-    char Temp[TEMP];
+    char Buffer[BUFFER_SIZE];
 
     Rectangle *r = unwrap(Value);
 
-    // Name
-    snprintf(Temp,TEMP,DOUBLE_INDENT"\"%s\":{",Key);
-    FileWriter->writeLine(Temp);
+    snprintf(
 
-    // Properties
+            /*
 
-    // Top
-    snprintf(Temp,TEMP,TRIPLE_INDENT"\"Top\":%i,",r->top);
-    FileWriter->writeLine(Temp);
+                Stream : Buffer
 
-    // Bottom
-    snprintf(Temp,TEMP,TRIPLE_INDENT"\"Bottom\":%i,",r->bottom);
-    FileWriter->writeLine(Temp);
+             */
 
-    // Right
-    snprintf(Temp,TEMP,TRIPLE_INDENT"\"Right\":%i,",r->right);
-    FileWriter->writeLine(Temp);
+            Buffer,
+             BUFFER_SIZE,
 
-    // Left
-    snprintf(Temp,TEMP,TRIPLE_INDENT"\"Left\":%i,",r->left);
-    FileWriter->writeLine(Temp);
+            /*
 
-    // Area
-    snprintf(Temp,TEMP,TRIPLE_INDENT"\"Area\":%i,",r->area);
-    FileWriter->writeLine(Temp);
+                Printing format
 
-    // Perimeter
-    snprintf(Temp,TEMP,TRIPLE_INDENT"\"Perimeter\":%i,",r->perimeter);
-    FileWriter->writeLine(Temp);
+             */
 
-    // Closing Bracket
-    snprintf(Temp,TEMP,DOUBLE_INDENT"},",Key);
-    FileWriter->writeLine(Temp);
+
+            //Name & Open Bracket
+             DOUBLE_INDENT"\"%s\": {\n"
+             //Top
+             TRIPLE_INDENT"\"Top\": %i,\n"
+             //Bottom
+             TRIPLE_INDENT"\"Bottom\": %i,\n"
+             //Right
+             TRIPLE_INDENT"\"Right\": %i,\n"
+             //Left
+             TRIPLE_INDENT"\"Left\": %i,\n"
+             //Area
+             TRIPLE_INDENT"\"Area\": %i,\n"
+             //Perimeter
+             TRIPLE_INDENT"\"Perimeter\": %i\n"
+             // Close Bracket
+             DOUBLE_INDENT"}%c",
+
+             /*
+
+                Passing the parameters
+
+              */
+
+             Key, r->top, r->bottom, r->right, r->left, r->area, r->perimeter,
+
+             // We are only adding a comma if there is another
+             (Index != LinkedHashMap->getLength(RectanglesList)-1) ? ',' : '\0'
+    );
+
+
+    FileWriter->writeLine(Buffer);
 
 }
 
 void QuitProgram() {
 
-    printf("\nGood bye!\n");
+    printf("Saving,,,, Hold on...\n");
 
     /*
 
@@ -699,18 +716,27 @@ void QuitProgram() {
     FileWriter->writeLine("{");
 
     // First Dictionary
-    FileWriter->writeLine("\t\"Rectangles\":{");
+    FileWriter->writeLine(SINGLE_INDENT"\"Rectangles\": {");
 
     // Serializing all elements and printing it inside this dictionary
-    LinkedHashMap->forEach(RectanglesList,&serializeRect);
+    LinkedHashMap->forEach(RectanglesList, &serializeRect);
 
     // Closing First Dictionary
-    FileWriter->writeLine("\t},");
+    FileWriter->writeLine(SINGLE_INDENT"}");
 
 
     FileWriter->writeLine("}");
 
     FileWriter->Close();
+
+    printf("Saved Rectangles...\n");
+
+    printf("Saving Statistics....\n");
+
+    printf("Saved Statistics...\n");
+
+    printf("\nGood bye!\n");
+
 }
 
 /*
