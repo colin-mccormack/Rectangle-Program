@@ -247,8 +247,8 @@ static int stringCompare (char *s1, char *s2) {
     int i = 0;
 
     while (s1[i] || s2[i]) {
-        if (s1[i] < s2[i] || !s1[i]) return 1;
-        if (s1[i] > s2[i] || !s1[i]) return -1;
+        if (s1[i] < s2[i] || !s1[i]) return -1;
+        if (s1[i] > s2[i] || !s2[i]) return 1;
         i++;
     }
 
@@ -256,35 +256,56 @@ static int stringCompare (char *s1, char *s2) {
 
 }
 
-static int binarySearch(LinkedHashMapType HashMap, int l, int r, char *Key) {
+static int indexSearch(LinkedHashMapType HashMap, int *index, int high, char *Key) {
 
-    int mid, x;
+    if (*index > high) return *index;
 
-    while (r >= l) {
-        mid = l + (r - l) / 2;
-
-        x = stringCompare(
-                unwrap(LinkedHashMap->getByIndex(HashMap, mid))->name,
-                Key);
-
-        // If the element is present at the middle
-        // itself
-        if (!x)
-            return mid;
-
-            // If element is smaller than mid, then
-            // it can only be present in left subarray
-        else if (x > 0)
-            r = mid - 1;
-
-            // Else the element can only be present
-            // in right subarray
-        else l = mid + 1;
+    else if (stringCompare(unwrap(LinkedHashMap->getByIndex(HashMap, *index))->name, Key) < 0) {//the string you are inserting is greater than the string being stored
+        (*index)++;
+        indexSearch(HashMap, index, high, Key);
     }
 
-    // We reach here when element is not
-    // present in array
-    return -1;
+    else
+        return *index;
+
+}
+static void attachStrings (char *s1, char *s2, char *target) {
+
+    int i = 0;
+
+    while (s1[i]) {
+        target[i] = s1[i];
+        i++;
+    }
+
+    int j = 0;
+
+    while (s2[j]) {
+        target[i] = s2[j];
+        i++;
+        j++;
+    }
+
+    target[i] = 0;
+
+}
+
+static int indexSearchStats(LinkedHashMapType HashMap, int *index, int high, char *Key) {
+
+    char target[RECT_NAME_CHARS*2+1];
+
+    attachStrings(unpack(LinkedHashMap->getByIndex(HashMap, *index))->r1->name, unpack(LinkedHashMap->getByIndex(HashMap, *index))->r2->name, target);
+
+    if (*index > high) return *index;
+
+    else if (stringCompare(target, Key) < 0) {//the string you are inserting is greater than the string being stored
+        (*index)++;
+        indexSearch(HashMap, index, high, Key);
+    }
+
+    else
+        return *index;
+
 }
 
 static void sort_and_insert(LinkedHashMapType HashMap, char *__restrict Key, void *__restrict Value) {
@@ -296,11 +317,17 @@ static void sort_and_insert(LinkedHashMapType HashMap, char *__restrict Key, voi
         return;
     }
 
-    int Index = binarySearch(HashMap, 0, length, Key);
+    int count = 0;
 
-    if (Index < 0) Index = 0;
-    else if (Index > length) Index = length;
+    int Index = 0;
 
+    if (HashMap == RectanglesList)
+        Index = indexSearch(HashMap, &count, length, Key);
+
+    else
+        Index = indexSearchStats(HashMap, &count, length, Key);
+
+    if (Index > length) Index = length;
 
     LinkedHashMap->putAt(HashMap, Key, Value, Index);
 }
@@ -398,10 +425,10 @@ void DisplayAllStats(const int Index, __attribute__((unused)) const char *__rest
 
     RectangleStatistics *rMath = unpack(R);
     Rectangle
-            *r1 = rMath->r1,
-            *r2 = rMath->r2,
-            *union_rect = rMath->unionRect,
-            *sect_rect = rMath->sectRect;
+    *r1 = rMath->r1,
+    *r2 = rMath->r2,
+    *union_rect = rMath->unionRect,
+    *sect_rect = rMath->sectRect;
 
     printf("Currently printing rectangle : %i\n", Index);
 
@@ -619,7 +646,9 @@ void AllCalculations() {
     IntersectRect(rMath);
 
     //store values for this statistic math
+    //sort_and_insert(StatisticsList, strcat(rMath->r1->name, rMath->r2->name), pack(rMath));
     sort_and_insert(StatisticsList, rMath->r1->name, pack(rMath));
+
 
     //printf("Where you should now put!\n");
     DisplayAllStats(0, "\0", pack(rMath));
@@ -793,10 +822,10 @@ static void serializeStats(const int Index, const char *__restrict Key, const vo
     RectangleStatistics *RS = unpack(Value);
 
     Rectangle
-            *r1 = RS->r1,
-            *r2 = RS->r2,
-            *unionRect = RS->unionRect,
-            *sectRect = RS->sectRect;
+    *r1 = RS->r1,
+    *r2 = RS->r2,
+    *unionRect = RS->unionRect,
+    *sectRect = RS->sectRect;
 
     // Statistics Number
     sprintf(Buffer,
