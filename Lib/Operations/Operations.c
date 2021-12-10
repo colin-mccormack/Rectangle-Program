@@ -242,14 +242,28 @@ static void InsertRandomRect(Rectangle *__restrict r) {
     Sort by Name.
  */
 
-static int binarySearch(LinkedHashMapType HashMap, int l, int r, const char *__restrict Key) {
+static int stringCompare (char *s1, char *s2) {
+
+    int i = 0;
+
+    while (s1[i] || s2[i]) {
+        if (s1[i] < s2[i] || !s1[i]) return 1;
+        if (s1[i] > s2[i] || !s1[i]) return -1;
+        i++;
+    }
+
+    return 0;
+
+}
+
+static int binarySearch(LinkedHashMapType HashMap, int l, int r, char *Key) {
 
     int mid, x;
 
     while (r >= l) {
         mid = l + (r - l) / 2;
 
-        x = strcmp(
+        x = stringCompare(
                 unwrap(LinkedHashMap->getByIndex(HashMap, mid))->name,
                 Key);
 
