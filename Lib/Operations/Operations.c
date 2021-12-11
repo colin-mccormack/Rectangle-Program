@@ -239,7 +239,9 @@ static void InsertRandomRect(Rectangle *__restrict r) {
 }
 
 /*
+    
     Sort by Name.
+
  */
 
 static int stringCompare (char *s1, char *s2) {
@@ -256,6 +258,12 @@ static int stringCompare (char *s1, char *s2) {
 
 }
 
+/*
+
+    Search for the insertion index of a rectangle (compare where in the previously sorted list the rectangle should be stored)
+
+*/
+
 static int indexSearch(LinkedHashMapType HashMap, int *index, int high, char *Key) {
 
     if (*index > high) return *index;
@@ -269,6 +277,13 @@ static int indexSearch(LinkedHashMapType HashMap, int *index, int high, char *Ke
         return *index;
 
 }
+
+/*
+
+    Add strings together into a target to allow for statistic string comparison
+
+*/
+
 static void attachStrings (char *s1, char *s2, char *target) {
 
     int i = 0;
@@ -290,6 +305,12 @@ static void attachStrings (char *s1, char *s2, char *target) {
 
 }
 
+/*
+
+    Search for the insertion index of a computation object (compare where in the previously sorted list the statistics should be stored)
+
+*/
+
 static int indexSearchStats(LinkedHashMapType HashMap, int *index, int high, char *Key) {
 
     char target[RECT_NAME_CHARS*2+1];
@@ -307,6 +328,12 @@ static int indexSearchStats(LinkedHashMapType HashMap, int *index, int high, cha
         return *index;
 
 }
+
+/*
+
+    Sort and insert into the appropriate index postition unising unique index search functions
+
+*/
 
 static void sort_and_insert(LinkedHashMapType HashMap, char *__restrict Key, void *__restrict Value) {
 
