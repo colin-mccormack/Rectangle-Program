@@ -19,6 +19,7 @@
   options on the screen.
 
 */
+
 void showMenu();
 
 /*
@@ -31,6 +32,12 @@ void showMenu();
 */
 
 int getResponse();
+
+/*
+
+    What can this be?
+
+ */
 
 void ClearConsole();
 

@@ -1,9 +1,10 @@
-#include <string.h>
 #include "Rectangle.h"
-#include "../../Configurations.h"
-#include "../IO/FileWriter.h"
 
-static int TotalRects;
+/*
+
+    To create a new Rectangle
+
+ */
 
 Rectangle *__restrict new() {
 
@@ -11,6 +12,7 @@ Rectangle *__restrict new() {
 
     if (!Rect) MALLOC_ERROR;
 
+    // Assign all of them to zero lol
     Rect->bottom =
     Rect->top =
     Rect->left =
@@ -24,9 +26,25 @@ Rectangle *__restrict new() {
     return Rect;
 }
 
+
+/*
+
+    How to cause a function overhead
+
+    LIKE THIS!
+
+ */
+
+
 void Delete(Rectangle *__restrict rect) {
     free(rect);
 }
+
+/*
+
+    To create a new Rectangle Statistics
+
+ */
 
 RectangleStatistics *__restrict newRectStats() {
 
@@ -34,6 +52,7 @@ RectangleStatistics *__restrict newRectStats() {
 
     if (!RectStats) MALLOC_ERROR;
 
+    // Assign all of them to null lazily
     RectStats->r1 =
     RectStats->r2 =
     RectStats->unionRect =
@@ -42,6 +61,14 @@ RectangleStatistics *__restrict newRectStats() {
     return RectStats;
 }
 
+/*
+
+    WHAT WAS THAT DELETE FUNCTION BEFORE FOR, IF YOU CALLED free() DIRECTLY?
+
+    It was there to look cool.
+
+ */
+
 void DeleteStats(RectangleStatistics *__restrict R) {
     free(R->r1);
     free(R->r2);
@@ -49,60 +76,26 @@ void DeleteStats(RectangleStatistics *__restrict R) {
     if (R->sectRect) free(R->sectRect);
 }
 
-void writeStats() {
+/*
 
-//    FileWriter->Open;
-//    FileWriter->writeLine("{");
-//
-//    change max rects to index!
-//
-//        FileWriter->write ("\t\"");
-//        FileWriter->write (RectangleStatistics->r1->name);
-//        FileWriter->write ("\": { \n");
-//        FileWriter->write ("\t\t\n\"top\": ");
-//        FileWriter->write (itoa(RectangleStatistics->r1->top));
-//        FileWriter->write ("\t\t\n\"bottom\": ");
-//        FileWriter->write (itoa(RectangleStatistics->r1->bottom));
-//        FileWriter->write ("\t\t\n\"right\": ");
-//        FileWriter->write (itoa(RectangleStatistics->r1->right));
-//        FileWriter->write ("\t\t\n\"left\": ");
-//        FileWriter->write (itoa(RectangleStatistics->r1->left));
-//        FileWriter->write ("\t\t\n\"area\": ");
-//        FileWriter->write (itoa(RectangleStatistics->r1->area));
-//        FileWriter->write ("\t\t\n\"perimeter\": ");
-//        FileWriter->write (itoa(RectangleStatistics->r1->perimeter));
-//        FileWriter->write ("\t}\n");
-//
-//        FileWriter->write ("\t\"");
-//        FileWriter->write (RectangleStatistics->r2->name);
-//        FileWriter->write ("\": { \n");
-//        FileWriter->write ("\t\t\n\"top\": ");
-//        FileWriter->write (itoa(RectangleStatistics->r2->top));
-//        FileWriter->write ("\t\t\n\"bottom\": ");
-//        FileWriter->write (itoa(RectangleStatistics->r2->bottom));
-//        FileWriter->write ("\t\t\n\"right\": ");
-//        FileWriter->write (itoa(RectangleStatistics->r2->right));
-//        FileWriter->write ("\t\t\n\"left\": ");
-//        FileWriter->write (itoa(RectangleStatistics->r2->left));
-//        FileWriter->write ("\t\t\n\"area\": ");
-//        FileWriter->write (itoa(RectangleStatistics->r2->area));
-//        FileWriter->write ("\t\t\n\"perimeter\": ");
-//        FileWriter->write (itoa(RectangleStatistics->r2->perimeter));
-//        FileWriter->write ("\t}\n");
-//        FileWriter->writeLine("}");
-//        FileWriter->Close;
+    What this for then?
 
-}
+    TO CREATE A CLASS OKAY? I KNOW C IS PROCEDURAL, BUT WHY NOT MAKE IT OBJECT ORIENTED?  KEEPS ME SANE OKAY?
+
+    oh okay, go write code in C++
+
+    DAMN NO, C++'s wack syntax makes me go mad srsly why do we have << :: >>
+
+    Yeah, i know Java is your religion
+
+    YES IT IS, NO ONE EVEN CARES OF GARBAGE COLLECTION IN THERE,
+
+    Mr. Devlin says OOP took 6 hours to process a call in Nortel
+
+   Exactly, explains why Nortel's stock is cheaper than a candy
 
 
-static char *SerializeRect(Rectangle *__restrict R) {
-
-}
-
-char *SerializeRectStats(Rectangle *__restrict RS) {
-
-}
-
+ */
 
 static const rectangleClass rectClass = {
         &new,

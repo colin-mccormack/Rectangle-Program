@@ -7,7 +7,6 @@
 */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include "IO.h"
 
 /*
@@ -18,18 +17,18 @@
 */
 
 static inline void clearScreen() {
-// For Platform Independence
-#if defined(__linux__) || defined(__unix__) || defined(__APPLE__)
-    system("clear");
-#endif
-#if defined(_WIN32) || defined(_WIN64)
-    system("cls");
-#endif
+    // This function was causing problem due to platform dependence
+    // GCC is a compiler for Unix / Linux, where as MSVC is for Windows.
+    // some functions worked on gcc, while some didnt on MSVC, and vice vera, so we got rid of this for now.
+    // The previous version of this function worked in AO3 and older assignments, we don't know if they are broke.
+    // The regex being used here stopped working in an expected manner since Windows 11.
+    // So we will keep this here. Don't worry about performance, the compiler is smart enough to not call
+    // a dummy function.
 }
 
 void showMenu() {
 
-    //clearScreen();
+    clearScreen();
 
     // Printing the options.
     printf("Rectangle Program Menu Options\n"
@@ -78,6 +77,8 @@ int getResponse() {
 */
 
 void ClearConsole() {
+
+    clearScreen();
 
     fflush(stdin);
 

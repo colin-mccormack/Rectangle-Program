@@ -1,3 +1,96 @@
+/*
+
+    LinkedHashMap.c
+
+    "This is cool" ~ Colin
+    "I'm impressed" ~ Edward Li
+    "Nah I just copied python" ~ Abdul
+    "This is crazy" ~ Mr. Devlin in future
+
+    in a nutshell, LinkedHashMap is a hybrid data structure of
+    LinkedLists and HashMaps.
+
+    The pros:
+
+    HashMaps allow us to index elements within an array with custom indices,
+    with constant time complexity, in our case, the indices are Strings.
+
+    Whereas LinkedHashMap's allow us to insert any element within an array with
+    constant time complexity.
+
+    The cons:
+
+    HashMaps do not maintain insertion order, impossible to sort.
+
+    Linked Lists are O(n) access, slower for accessing items.
+
+    Solution:
+
+    LinkedHashMaps, hashMaps allow us to index by string indices, and linked lists maintain
+    insertion order.
+
+    Solution to O(n) access in linked lists: Fast acces linked lists, a new modified linkedlists
+    made by me (Abdul) to access any elements with O(n/2) time, whats even more cool is, its
+    O(1) for linear search, and O(log(n)) for binary search.
+
+    Now How it works:
+
+    We are using a non-cryptographic hashing algorithm known as FNV Hash that is fast, simple, and
+    most importantly it works. We are using it to generate indexes for indexing or accessing stored
+    elements in the array.
+
+    While FNV hash as a security vulnerability linked to it, because of which python migrated to sip hash,
+    which is more complicated and slow, in our case, we are sticking with FNV because we are not really
+    dealing with real life situation where we are dealing with exploiters.
+
+    So back to the point, FNV hash requires a string and returns an output, we turn that output into
+    a numeric index between zero and lenght of the hash map.
+
+    We insert the provided value in that location, we also need to keep in mind that few unique strings
+    generate same numeric index, causing collisions, such as "foo" and "x" map to same index.
+
+    To deal with collisions, we create a small linked list that we can use to store values that map to
+    same index, this might lead to O(n) time complexity in worst case, but It's pretty rare and hard to
+    find strings with same index.
+
+    So that's the hash map part, each value is basically stored in a node, and the hashmap holds pointers
+    to the node, empty indexes hold NULL values indicating there are no nodes in that index. Each node
+    is also node of a hashmap and a node of a linked list.
+
+    In our case, we are using doubly Linked lists, so each node keeps reference of a node before and after it.
+
+    So each node has fileds of:
+        Value : Holds a pointer to a value
+        Last  : Holds reference to the node before it (Linked Lists)
+        After : Holds a reference to the node that comes after it, meaning, to handle collisions (hash map)
+        Next  : Holds a reference to the node that comes next it (Linked Lists)
+
+
+   A simple diagram
+
+                       Head        LinkedList
+                         0   Node 1
+      HashMap Array ->   1
+                         2   Node 3  ->  Node 4
+                         3
+                         4   Node 2
+                         5
+
+    See how HashMap doesnt maintain order? LinkedList's only job is to maintain that order.
+    So linked list nodes will keep pointers to their next and previous nodes to maintain that order.
+
+    Also, see how Node 3 and 4 are causing collisions (Same Index), node's after value is added to
+    handle the collisions.
+
+
+    Read Also:
+
+    documentation for some modified features doesnt exist here, its because it's already
+    present, and I dont want to re-state them here. You can find them here:https://github.com/MrMouse2405/Linked-List-C
+
+ */
+
+
 #include "LinkedHashMap.h"
 
 #include <stdio.h>
@@ -5,36 +98,64 @@
 #include <string.h>
 #include "../../Configurations.h"
 
-#define HEAD 1
-#define TAIL 2
-#define CURSOR 0
-
 /*
 
-    Linked Hash Map
+    Node
 
 */
 
 typedef struct node {
 
+    // Value being stored
     void *__restrict Value;
+
+    // The Key of the node
     char *__restrict StringKey;
+
+    // Node before it (Linked Lists)
     struct node *__restrict Last;
+
+    // Node that comes Next (Linked Lists)
     struct node *__restrict Next;
+
+    // Node that comes after it, to handle collisions (Hash Map)
     struct node *__restrict After;
 
 } Node;
 
+/*
+
+    Linked Hash Mao structure
+
+    This is the structure that holds the references
+    to the salient nodes (Head, Tail, Cursor) and
+    holds some data about the linked hahs map
+
+ */
 struct linkedHashMap {
 
+    // Head Node
     Node *__restrict Head;
+
+    // Tail Node
     Node *__restrict Tail;
+
+    // Cursor Node
     Node *__restrict NodeAtCursor;
 
+    // Cursor Position
     int Cursor;
 
+    // Current length of the map
     int Length;
+
+    // Max length of the mao
     int MaxCapacity;
+
+    // Deletion handler for garbage collection.
+    void (*DeletionHandler)(void *__restrict);
+
+    // Array for the hash map
     Node *Array[];
 
 };
@@ -77,10 +198,11 @@ static unsigned long long getHashIndex(const char *__restrict Key, int n) {
 
     LinkedHashMap new()
 
+    Creates a new LinkedHashMapStructure and assigns default values
 
 */
 
-static LinkedHashMapType new(const int InitialCapacity) {
+static LinkedHashMapType new(const int InitialCapacity, void (*DeletionHandler)(void *)) {
 
     LinkedHashMapType newLinkedHashMap = (LinkedHashMapType) malloc(
             sizeof(struct linkedHashMap) +
@@ -88,6 +210,7 @@ static LinkedHashMapType new(const int InitialCapacity) {
 
     if (!newLinkedHashMap) MALLOC_ERROR
 
+    // Assign all indexes in the array as null
     for (int i = 0; i < InitialCapacity; i++)
         newLinkedHashMap->Array[i] = NULL;
 
@@ -96,6 +219,7 @@ static LinkedHashMapType new(const int InitialCapacity) {
     newLinkedHashMap->NodeAtCursor = NULL;
     newLinkedHashMap->Cursor = 0;
     newLinkedHashMap->Length = 0;
+    newLinkedHashMap->DeletionHandler = DeletionHandler;
     newLinkedHashMap->MaxCapacity = InitialCapacity;
 
 
@@ -143,6 +267,13 @@ static int canStore(LinkedHashMapType Map) {
 
     getNode
 
+    Documentation for this is here:
+    https://github.com/MrMouse2405/Linked-List-C
+
+    In simple words, this just transverses through the
+    linked list and get's the node we want.
+
+    Time complexity: O(1) to O(n/2)
 
  */
 static Node *get(LinkedHashMapType list, int Index) {
@@ -239,7 +370,9 @@ static Node *get(LinkedHashMapType list, int Index) {
 
 /*
 
-    put
+    putAt
+
+    adds a node at a provided index
 
 
 */
@@ -350,13 +483,22 @@ static void putAt(LinkedHashMapType HashMap, char *__restrict StringKey, void *_
 
 }
 
+/*
+
+    Puts the node at the end
+
+ */
+
 static void put(LinkedHashMapType HashMap, char *__restrict StringKey, void *__restrict Instance) {
     putAt(HashMap, StringKey, Instance, HashMap->Length);
 }
 
 /*
 
- getByKey
+  getByKey
+
+   Hashes the string to gives us an index, and then returns the node
+   that is found at the given index.
 
 */
 
@@ -391,6 +533,8 @@ static void *getByKey(LinkedHashMapType HashMap, const char *__restrict StringKe
 
  getByIndex
 
+  Returns the found at the provided index.
+
 */
 
 void *getByIndex(LinkedHashMapType HashMap, int Index) {
@@ -399,7 +543,10 @@ void *getByIndex(LinkedHashMapType HashMap, int Index) {
 
 /*
 
+    Similar to C++ iterator
 
+    calls the provided function on each element
+    present in the map in order
 
 
  */
@@ -418,28 +565,65 @@ void forEach(LinkedHashMapType HashMap,
 
 /*
 
-
+    Removes the provided node.
 
  */
 
 static void RemoveNode(LinkedHashMapType HashMap, Node *node) {
+
+    // If there is a node before it
     if (node->Last) {
+
+        // Set Previous node's next as this node's next (NULL if there is no next)
         node->Last->Next = node->Next;
-        if (node->Next) {
+
+        // if there is a node after this
+        if (node->Next)
+            // Set next node as this node's Last
             node->Next->Last = node->Last;
-        } else {
+
+        // Else set tail to this node.
+        else
             HashMap->Tail = node;
-        }
-    } else if (node->Next) {
+
+    }
+
+    // If there is a next node and not last node (In case of head node)
+    else if (node->Next) {
         node->Next->Last = NULL;
         HashMap->Head = node->Next;
     }
+
+    /*
+
+     Now the deletion part
+
+     */
+
+    // if there is a deletion handler, then use it to delete the value
+    if (HashMap->DeletionHandler)
+        HashMap->DeletionHandler(node->Value);
+    // Else, just free it
+    else
+        free(node->Value);
+
+    // Delete this node
     free(node);
+
+    // Reset cursor
     HashMap->Cursor = 0;
     HashMap->NodeAtCursor = HashMap->Head;
+
+    // Decrease the length
     HashMap->Length--;
 }
 
+/*
+
+    Deletes the node indexed by the provided string.
+
+
+ */
 
 void DeleteKey(LinkedHashMapType HashMap, const char *__restrict StringKey) {
 
@@ -478,6 +662,7 @@ void DeleteKey(LinkedHashMapType HashMap, const char *__restrict StringKey) {
 
 /*
 
+    DeL etes the node present at the index,
 
 */
 
@@ -488,14 +673,17 @@ void DeleteIndex(LinkedHashMapType HashMap, const int Index) {
 
 /*
 
-
+    Deketes the entire
 
  */
+
 
 void DeleteMap(LinkedHashMapType HashMap) {
 
     // Get first node
     Node *curNode = HashMap->Head;
+
+    void (*Delete)(void *) = (HashMap->DeletionHandler) ? HashMap->DeletionHandler : &free;
 
     // To store reference to next node
     Node *NextNode = NULL;
@@ -504,7 +692,7 @@ void DeleteMap(LinkedHashMapType HashMap) {
         NextNode = curNode->Next;
 
         // GC Data Stored in the Node
-        free(curNode->Value);
+        Delete(curNode->Value);
 
         // GC Node
         free(curNode);
@@ -518,13 +706,18 @@ void DeleteMap(LinkedHashMapType HashMap) {
     HashMap->Tail = NULL;
     HashMap->NodeAtCursor = NULL;
 
+    free(HashMap->Array);
+
     free(HashMap);
 }
 
 
 /*
 
-    Abstracting and converting functions to methods.
+    Abstracting and encapsulating all functions into a class.
+
+    Anyways, this took me 2 days to write.
+
 
  */
 

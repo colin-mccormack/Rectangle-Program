@@ -1,14 +1,16 @@
 /*
 
-   Define input standard format for a rectangle in the order :
-        (top, bottom, right, left)
+   Configuration.h
+
+   Just a container header file for storing all our configurations.
+
+   This container header file's macros will be used all over the program,
+   so if any changes are made here, all files will be automatically updated.
 
  */
 
 #ifndef Configurations
 #define Configurations
-
-#define MAX_NUMBER_OF_RECTANGLES 10
 
 
 #define MPW_LT 0
@@ -22,11 +24,10 @@
 
 #define MAX_RECTS 200
 
-// For Program
 
+// For Error Handling Macros
 #include <stdio.h>
 #include <stdlib.h>
-
 
 #define MALLOC_ERROR {printf("MALLOC ERROR"); exit(-1);};
 

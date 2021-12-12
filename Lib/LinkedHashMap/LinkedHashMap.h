@@ -1,3 +1,17 @@
+/*
+
+    LinkedHashMap.h
+
+    This is a special hybrid data structure that allows us to index
+    values by string keys.
+
+    This data structure combines Linked Lists and HashMaps to
+    allow users to index values with string keys while also allowing
+    them to maintain insertion / sorting order
+
+ */
+
+
 #ifndef LINKED_HASH_MAP
 #define LINKED_HASH_MAP
 
@@ -13,13 +27,33 @@ typedef struct linkedHashMap *__restrict LinkedHashMapType;
 
 /*
 
+    LinkedHashMap structure
 
+    This Structure encapsulates all the functions you might
+    need to operate on Linked Hash Maps.
+
+    Example usage:
+    LinkedHashMap->new()
 
  */
 
 typedef struct {
 
-    LinkedHashMapType (*const new)(const int Capacity);
+    /*
+
+        LinkedHashMap new(int Capacity,void(*DeletionHandler(void*))
+
+        Creates a new LinkedHashMap amd returns a pointer to it.
+
+        params:
+            Capacity, initial capacity to start with.
+            DeletionHandler: Function that will be called upon garbage collecting a value
+
+        Usage:
+            LinkedHashMap->new()
+     */
+
+    LinkedHashMapType (*const new)(const int Capacity,void (*DeletionHandler)(void *));
 
     int (*const getLength)(LinkedHashMapType);
 

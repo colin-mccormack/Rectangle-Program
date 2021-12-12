@@ -89,8 +89,8 @@ static LinkedHashMapType RectanglesList = NULL;
 static LinkedHashMapType StatisticsList = NULL;
 
 void Initialize() {
-    RectanglesList = LinkedHashMap->new(MAX_RECTS);
-    StatisticsList = LinkedHashMap->new(MAX_RECTS);
+    RectanglesList = LinkedHashMap->new(MAX_RECTS, (void (*)(void *)) RectangleClass->Delete);
+    StatisticsList = LinkedHashMap->new(MAX_RECTS, (void (*)(void *)) RectangleClass->DeleteStats);
 }
 
 /*
@@ -244,7 +244,7 @@ static void InsertRandomRect(Rectangle *__restrict r) {
 
  */
 
-static int stringCompare (char *s1, char *s2) {
+static int stringCompare(char *s1, char *s2) {
 
     int i = 0;
 
@@ -268,12 +268,11 @@ static int indexSearch(LinkedHashMapType HashMap, int *index, int high, char *Ke
 
     if (*index > high) return *index;
 
-    else if (stringCompare(unwrap(LinkedHashMap->getByIndex(HashMap, *index))->name, Key) < 0) {//the string you are inserting is greater than the string being stored
+    else if (stringCompare(unwrap(LinkedHashMap->getByIndex(HashMap, *index))->name, Key) <
+             0) {//the string you are inserting is greater than the string being stored
         (*index)++;
         indexSearch(HashMap, index, high, Key);
-    }
-
-    else
+    } else
         return *index;
 
 }
@@ -284,7 +283,7 @@ static int indexSearch(LinkedHashMapType HashMap, int *index, int high, char *Ke
 
 */
 
-static void attachStrings (char *s1, char *s2, char *target) {
+static void attachStrings(char *s1, char *s2, char *target) {
 
     int i = 0;
 
@@ -313,18 +312,17 @@ static void attachStrings (char *s1, char *s2, char *target) {
 
 static int indexSearchStats(LinkedHashMapType HashMap, int *index, int high, char *Key) {
 
-    char target[RECT_NAME_CHARS*2+1];
+    char target[RECT_NAME_CHARS * 2 + 1];
 
-    attachStrings(unpack(LinkedHashMap->getByIndex(HashMap, *index))->r1->name, unpack(LinkedHashMap->getByIndex(HashMap, *index))->r2->name, target);
+    attachStrings(unpack(LinkedHashMap->getByIndex(HashMap, *index))->r1->name,
+                  unpack(LinkedHashMap->getByIndex(HashMap, *index))->r2->name, target);
 
     if (*index > high) return *index;
 
     else if (stringCompare(target, Key) < 0) {//the string you are inserting is greater than the string being stored
         (*index)++;
         indexSearch(HashMap, index, high, Key);
-    }
-
-    else
+    } else
         return *index;
 
 }
@@ -452,10 +450,10 @@ void DisplayAllStats(const int Index, __attribute__((unused)) const char *__rest
 
     RectangleStatistics *rMath = unpack(R);
     Rectangle
-    *r1 = rMath->r1,
-    *r2 = rMath->r2,
-    *union_rect = rMath->unionRect,
-    *sect_rect = rMath->sectRect;
+            *r1 = rMath->r1,
+            *r2 = rMath->r2,
+            *union_rect = rMath->unionRect,
+            *sect_rect = rMath->sectRect;
 
     printf("Currently printing rectangle : %i\n", Index);
 
@@ -660,10 +658,14 @@ void AllCalculations() {
     }
 
     //set the two members from the rectangle statistics to the random rectangles
-    rMath->r1 = unwrap(r1);
-    rMath->r2 = unwrap(r2);
+    rMath->r1 = RectangleClass->new();
+    rMath->r2 = RectangleClass->new();
     rMath->unionRect = RectangleClass->new();
     rMath->sectRect = RectangleClass->new();
+
+    memcpy(rMath->r1, r1, sizeof(Rectangle));
+    memcpy(rMath->r2, r2, sizeof(Rectangle));
+
 
     //find and store union value
     UnionRect(rMath);
@@ -849,10 +851,10 @@ static void serializeStats(const int Index, const char *__restrict Key, const vo
     RectangleStatistics *RS = unpack(Value);
 
     Rectangle
-    *r1 = RS->r1,
-    *r2 = RS->r2,
-    *unionRect = RS->unionRect,
-    *sectRect = RS->sectRect;
+            *r1 = RS->r1,
+            *r2 = RS->r2,
+            *unionRect = RS->unionRect,
+            *sectRect = RS->sectRect;
 
     // Statistics Number
     sprintf(Buffer,
@@ -926,6 +928,17 @@ void QuitProgram() {
 
     printf("Saved Statistics...\n");
 
+    printf("Exiting...\n");
+
+    /*
+
+        Performing Garbage Collection
+
+     */
+
+    LinkedHashMap->DeleteMap(RectanglesList);
+    LinkedHashMap->DeleteMap(StatisticsList);
+
 
     printf("\nGood bye!\n");
 
@@ -940,6 +953,7 @@ void QuitProgram() {
 void invalidCase() {
 
     /*
+
       Ask them to retry with error prompt
 
     */
