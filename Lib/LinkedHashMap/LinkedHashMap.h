@@ -53,9 +53,38 @@ typedef struct {
             LinkedHashMap->new()
      */
 
-    LinkedHashMapType (*const new)(const int Capacity,void (*DeletionHandler)(void *));
+    LinkedHashMapType (*const new)(const int Capacity, void (*DeletionHandler)(void *));
+
+    /*
+
+        int getLength(LinkedHashMapType)
+
+        Returns the length of the hash map
+
+        params:
+            LinkedHashMapType
+
+        Usage:
+            LinkedHashMap->getLength()
+     */
 
     int (*const getLength)(LinkedHashMapType);
+
+
+    /*
+
+        int canStore(LinkedHashMapType)
+
+        Returns true if there is space left.
+
+        params:
+            LinkedHashMapType
+
+        Usage:
+            LinkedHashMap->getLength()
+     */
+
+
 
     int (*const canStore)(LinkedHashMapType);
 

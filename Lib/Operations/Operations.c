@@ -9,6 +9,7 @@
 
 #define DISPLAY_INVALID_OPTION_ERROR printf("No working case. Retry.\n");
 #define DISPLAY_INVALID_RECT_ERROR printf("Incorrect rectangle parameters. Retry.\n");
+#define OUT_OF_MEMORY_ERROR {printf("LIMIT REACHED\n"); return; }
 
 void UserRect();
 
@@ -115,18 +116,6 @@ static inline RectangleStatistics *__restrict unpack(const void *__restrict RS) 
     return (RectangleStatistics *) RS;
 }
 
-/*
-
-    pop()
-
- */
-
-static void *__restrict pop(LinkedHashMapType HashMap, const int Index) {
-    void *__restrict Value = LinkedHashMap->getByIndex(HashMap, Index);
-    LinkedHashMap->DeleteIndex(HashMap, Index);
-    return Value;
-}
-
 
 /*
 
@@ -171,10 +160,17 @@ static void InsertUserRect(Rectangle *r) {
         printf("Enter the left coordinate : ");
         scanf("%d", &r->left);
 
-        printf("Enter the name : ");
-        scanf("%s", r->name);
-
         fflush(stdin);
+
+        while (1) {
+            printf("Enter the name : ");
+            scanf("%s", r->name);
+            fflush(stdin);
+            if (LinkedHashMap->getByKey(RectanglesList, r->name))
+                printf("RETRY, RECTANGLE ALREADY EXISTS\n");
+            else
+                break;
+        }
 
         //if error then display error message
         if (invalidRect)
@@ -244,7 +240,7 @@ static void InsertRandomRect(Rectangle *__restrict r) {
 
  */
 
-static int stringCompare(char *s1, char *s2) {
+static int stringCompare(const char *s1, const char *s2) {
 
     int i = 0;
 
@@ -266,7 +262,8 @@ static int stringCompare(char *s1, char *s2) {
 
 static int indexSearch(LinkedHashMapType HashMap, int *index, int high, char *Key) {
 
-    if (*index > high) return *index;
+    if (*index > high)
+        return *index;
 
     else if (stringCompare(unwrap(LinkedHashMap->getByIndex(HashMap, *index))->name, Key) <
              0) {//the string you are inserting is greater than the string being stored
@@ -283,7 +280,7 @@ static int indexSearch(LinkedHashMapType HashMap, int *index, int high, char *Ke
 
 */
 
-static void attachStrings(char *s1, char *s2, char *target) {
+static void attachStrings(const char *s1, const char *s2, char *target) {
 
     int i = 0;
 
@@ -504,6 +501,9 @@ void DisplayAllStats(const int Index, __attribute__((unused)) const char *__rest
 
 void UserRect() {
 
+    if (!LinkedHashMap->canStore(RectanglesList)) OUT_OF_MEMORY_ERROR
+
+
     Rectangle *r = RectangleClass->new();
     InsertUserRect(r);
     //store rectangle
@@ -518,6 +518,10 @@ void UserRect() {
 */
 
 void RandomRect() {
+
+
+    if (!LinkedHashMap->canStore(RectanglesList)) OUT_OF_MEMORY_ERROR
+
 
     Rectangle *r = RectangleClass->new();
     InsertRandomRect(r);
@@ -576,9 +580,6 @@ void DeleteRect() {
 
         if (choice == 1) {
 
-            // Using Goto here isnt bad, it's a bad practice
-            // if its abused and is used to make a spaghetti code
-
             printf("Please enter the index of the rectangle you wish to delete : \n>");
             scanf("%d", &indexKey);
 
@@ -593,8 +594,6 @@ void DeleteRect() {
 
         if (choice == 2) {
 
-            // lol, I am seriously bored at this moment after speed running
-            // an essay and submitting in 10 mins ago
 
             printf("Please enter the name of the rectangle you wish to delete : \n>");
             scanf("%s", searchKey);
@@ -621,21 +620,22 @@ void DeleteRect() {
 
 void AllCalculations() {
 
-    RectangleStatistics *rMath = unpack(RectangleClass->newRectStats());
+    RectangleStatistics *rMath = RectangleClass->newRectStats();
     Rectangle *temp, *r1, *r2;
 
     int length = LinkedHashMap->getLength(RectanglesList);
 
     //if length is zero, no check possible
-    if (length == 0) {
-        invalidCase();
+    if (length <= 1) {
+        printf("Not Enough Rectangles!. These are the rectangles present!\n");
+        DisplayRectangles();
         return;
     }
 
     void *r1p, *r2p;
 
     //get two random rectangles
-    //while the rectangles are teh same keep getting new ones
+    //while the rectangles are the same keep getting new ones
 
 
     srand((unsigned int) rand());
