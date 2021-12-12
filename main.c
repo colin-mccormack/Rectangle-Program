@@ -21,7 +21,7 @@
     This file: Entry Point of the program
 
     @authors: Abdul Mannan Syed, asyed24@ocdsb.ca
-              Colin McCormack, cmccor@ocdsb.ca
+              Colin McCormack, cmcco3@ocdsb.ca
 
  */
 
