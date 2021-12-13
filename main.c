@@ -5,7 +5,7 @@
     This project is divided into multiple files and libraries
 
     Lib/IO
-        - IN.h : Forms and Interface between User and the Program
+        - IO.h : Forms and Interface between User and the Program
         - FileWriter.h : Writes contents into Out/rectangles.json
 
     Lib/LinkedHashMap
@@ -21,7 +21,7 @@
     This file: Entry Point of the program
 
     @authors: Abdul Mannan Syed, asyed24@ocdsb.ca
-              Colin McCormack, cmccor@ocdsb.ca
+              Colin McCormack, cmcco3@ocdsb.ca
 
  */
 

@@ -1,3 +1,19 @@
+/*
+
+    Operations.c
+
+    This file is responsible for handling all the operations
+    performed by the program.
+
+    This is a file that uses all the libraries to performs
+    tasks requested by the user.
+
+
+
+
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
