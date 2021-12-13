@@ -322,6 +322,7 @@ static int indexSearchStats(LinkedHashMapType HashMap, int *index, int high, cha
     } else
         return *index;
 
+
 }
 
 /*
@@ -622,6 +623,7 @@ void AllCalculations() {
 
     RectangleStatistics *rMath = RectangleClass->newRectStats();
     Rectangle *temp, *r1, *r2;
+    char target[RECT_NAME_CHARS * 2 + 1];
 
     int length = LinkedHashMap->getLength(RectanglesList);
 
@@ -676,7 +678,9 @@ void AllCalculations() {
 
     //store values for this statistic math
     //sort_and_insert(StatisticsList, strcat(rMath->r1->name, rMath->r2->name), pack(rMath));
-    sort_and_insert(StatisticsList, rMath->r1->name, pack(rMath));
+    attachStrings(rMath->r1->name, rMath->r2->name, target);
+
+    sort_and_insert(StatisticsList, target, pack(rMath));
 
 
     //printf("Where you should now put!\n");
